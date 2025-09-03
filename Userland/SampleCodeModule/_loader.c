@@ -3,26 +3,29 @@
 
 extern char bss;
 extern char endOfBinary;
+// extern void memz(void *destiny, uint64_t length);
 
 int main();
 
-void * memset(void * destiny, int32_t c, uint64_t length);
+void *memset(void * destiny, int8_t c, uint64_t length);
 
 int _start() {
 	//Clean BSS
-	memset(&bss, 0, &endOfBinary - &bss);
+	memset(&bss, '\0', &endOfBinary - &bss);
+	// memz(&bss, &endOfBinary - &bss);
 
 	return main();
 
 }
 
 
-void * memset(void * destiation, int32_t c, uint64_t length) {
+void *memset(void * destiny, int8_t c, uint64_t length) {
 	uint8_t chr = (uint8_t)c;
-	char * dst = (char*)destiation;
+	char *dst = (char*)destiny;
 
 	while(length--)
 		dst[length] = chr;
 
-	return destiation;
+
+	return destiny;
 }
