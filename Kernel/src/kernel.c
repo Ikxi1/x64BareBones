@@ -3,6 +3,7 @@
 #include <lib.h>
 // #include <moduleLoader.h>
 #include <naiveConsole.h>
+#include <naiveVideo.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -72,32 +73,9 @@ void * initializeKernelBinary() {
 }
 
 int main() {
+	nv_init();
 
-	// ncPrint("[Kernel Main]");
-	// ncNewline();
-	// ncPrint("  Sample code module at 0x");
-	// ncPrintHex((uint64_t)sampleCodeModuleAddress);
-	// ncNewline();
-	// ncPrint("  Calling the sample code module returned: ");
-	// ncPrintHex(((EntryPoint)sampleCodeModuleAddress)());
-	// ncNewline();
-
-	// ncNewline();
-	// ncPrint("  Sample data module at 0x");
-	// ncPrintHex((uint64_t)sampleDataModuleAddress);
-	// ncNewline();
-	// ncPrint("  Sample data module contents: ");
-	// ncPrint((char*)sampleDataModuleAddress);
-	// ncNewline();
-	// ncPrint("[Finished]");
-
-	ncPrint("YO this is SICK", 1);
-	ncPrint("EPIC I TELL YOU", 1);
-	ncPrint("How about.... some... 'fun'.. HAHAHA", 1);
-
-	for (int i = 0; i < 20; ++i) ncPrintDec(gettime(), 1);
-
-	// draw_rainbow();
+	nv_rainbow();
 
 	return 0;
 }

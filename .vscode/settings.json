@@ -2,5 +2,13 @@
 	"files.associations": {
 		"moduleloader.h": "c",
 		"naiveconsole.h": "c"
+	},
+	"files.exclude": {
+    "**/*.o": true,
+	"**/*.sys": true,
+	"**/*.bin": true
+	},
+	"search.exclude": {
+    "**/*.o": true
 	}
 }

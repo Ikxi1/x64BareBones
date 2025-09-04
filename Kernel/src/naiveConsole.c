@@ -1,4 +1,5 @@
 #include <naiveConsole.h>
+#include <lib.h>
 
 static uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base);
 
@@ -8,12 +9,11 @@ static uint8_t *videoCurrent = (uint8_t *)0xB8000;
 static const uint32_t videoWidth = 80;
 static const uint32_t videoHeight = 25 ;
 static const uint32_t videoSize = videoWidth * videoHeight;
-static uint8_t *const videoMax = videoBase + videoSize;
+// static unsigned short *const videoMax = videoBase + videoSize;
+
 
 void ncPrint(const char * string, uint8_t newline) {
-	int i;
-
-	for (i = 0; string[i] != 0; i++)
+	for (int i = 0; string[i] != 0; i++)
 		ncPrintChar(string[i]);
 
 	if (newline == 1) ncNewline();
@@ -24,26 +24,33 @@ void ncPrintChar(char character) {
 	videoCurrent += 2;
 }
 
-void ncNewline() {
-	while((uint64_t)(videoCurrent - videoBase) % (videoWidth * 2) != 0)	{
+// void ncNewline() {
+// 	while((uint64_t)(videoCurrent - videoBase) % (videoWidth * 2) != 0)	{
+// 		ncPrintChar(' ');
+// 		if (videoCurrent - videoBase);
+// 	}
+// }
+
+void ncNewline()
+{
+	do
+	{
 		ncPrintChar(' ');
-		if (videoCurrent - videoBase);
 	}
+	while((uint64_t)(videoCurrent - videoCurrent) % (videoWidth * 2) != 0);
 }
 
-void ncPrintDec(uint64_t value, uint8_t newline) {
+
+void ncPrintDec(uint64_t value) {
 	ncPrintBase(value, 10);
-	if (newline == 1) ncNewline();
 }
 
-void ncPrintHex(uint64_t value, uint8_t newline) {
+void ncPrintHex(uint64_t value) {
 	ncPrintBase(value, 16);
-	if (newline == 1) ncNewline();
 }
 
-void ncPrintBin(uint64_t value, uint8_t newline) {
+void ncPrintBin(uint64_t value) {
 	ncPrintBase(value, 2);
-	if (newline == 1) ncNewline();
 }
 
 void ncPrintBase(uint64_t value, uint32_t base) {
@@ -52,9 +59,7 @@ void ncPrintBase(uint64_t value, uint32_t base) {
 }
 
 void ncClear() {
-	int i;
-
-	for (i = 0; i < videoSize; i++)
+	for (int i = 0; i < videoHeight * videoWidth; i++)
 		videoBase[i * 2] = ' ';
 	videoCurrent = videoBase;
 }
@@ -93,7 +98,19 @@ static uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base) {
 
 void draw_rainbow() {
 	ncClear();
-	for (int i = 0; i < videoSize; ++i) {
-		videoBase[i * 2] = i % 255;
+	unsigned short j = 0;
+	int k = 0;
+	unsigned background_colour = 0 << 12;
+	unsigned foreground_colour = 2 << 8;
+	unsigned colour = background_colour | foreground_colour;
+	while (1) {
+		if (k % 250000000 == 0) {
+			for (unsigned short i = 0; i < videoSize;) {
+				videoBase[i] = colour | j % 0b0000000011111111;
+				i += 1;
+			}
+			j++;
+		}
+		k++;
 	}
 }

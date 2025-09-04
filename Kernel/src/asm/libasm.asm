@@ -1,6 +1,8 @@
 global cpuVendor
 global strlen
 global gettime
+global inportb
+global outportb
 
 section .text
 
@@ -51,6 +53,7 @@ inportb:
 	mov dx, di
 	in al, dx
 	ret
+
 
 outportb:
 	; arg 1 = di unsigned short port
