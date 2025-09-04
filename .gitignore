@@ -1,3 +1,4 @@
+Bootloader/Pure64/bin/*
 .idea/
 test.asm
 test
