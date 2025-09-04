@@ -1,5 +1,5 @@
 Bootloader/Pure64/bin/*
-.vscode/*
+.vscode/
 .idea/
 test.asm
 test
