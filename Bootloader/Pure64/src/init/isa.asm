@@ -118,14 +118,112 @@ rtc_poll:
 	cmp byte [cfg_vesa], 1		; Check if VESA should be enabled
 	jne VBEdone			; If not then skip VESA init
 
-	mov edi, VBEModeInfoBlock	; VBE data will be stored at this address
-	mov ax, 0x4F01			; GET SuperVGA MODE INFORMATION - http://www.ctyme.com/intr/rb-0274.htm
+
+; ============================================================
+; Find and set 2560x1440x32 if BIOS exposes it
+; ============================================================
+
+VBEInfoBlock:     equ 0x00005800     ; 512-byte buffer for controller info
+
+find_vbe_mode:
+    ; Request controller info
+    mov di, VBEInfoBlock
+	mov ax, di
+	shr ax, 4
+    mov es, ax
+    mov ax, 0x4F00
+    and di, 0x000F
+    mov dword [es:di], '2EBV'       ; set signature VBE2
+    int 0x10
+    cmp ax, 0x004F
+    jne vbe_fail                    ; no VBE
+
+    ; Get pointer to mode list (word list, ends with 0xFFFF)
+    mov bx, [es:di+0x0E]            ; offset
+    mov cx, [es:di+0x10]            ; segment
+    mov ds, cx
+    mov si, bx
+
+next_mode:
+    lodsw                           ; AX = mode number
+    cmp ax, 0xFFFF
+    je done_modes
+
+    push ax                         ; save mode number
+    mov cx, ax                      ; CX = mode number
+    mov di, VBEModeInfoBlock
+	mov ax, di
+	shr ax, 4
+    mov es, ax
+    mov ax, 0x4F01
+    and di, 0x000F
+    int 0x10
+    pop ax                          ; restore mode number into AX
+    cmp ax, 0x004F
+    jne next_mode
+
+    ; Mode attributes check: bit0=mode supported
+    mov bx, [es:di+0x00]
+    test bx, 1
+    jz next_mode
+
+    ; Require linear framebuffer available (bit7)
+    test bx, 1<<7
+    jz next_mode
+
+    ; Check resolution
+    mov bx, [es:di+0x12]            ; XResolution
+    cmp bx, 2560
+    jne next_mode
+    mov bx, [es:di+0x14]            ; YResolution
+    cmp bx, 1440
+    jne next_mode
+    mov bl, [es:di+0x19]            ; BitsPerPixel
+    cmp bl, 32
+    jne next_mode
+
+    ; Found it!
+    mov [BestMode], cx
+    jmp done_modes
+
+done_modes:
+    cmp word [BestMode], 0
+    je fallback
+
+    ; Set best mode
+    mov bx, [BestMode]
+    or bx, 0x4000                   ; request linear framebuffer
+    mov ax, 0x4F02
+    int 0x10
+    cmp ax, 0x004F
+    jne vbe_fail
+    jmp VBEdone
+
+fallback:
+    ; Fall back to 1280x1024x24 (0x411B) like before
+    mov bx, 0x411B
+    or bx, 0x4000
+    mov ax, 0x4F02
+    int 0x10
+    cmp ax, 0x004F
+    jne vbe_fail
+    jmp VBEdone
+
+vbe_fail:
+    mov si, msg_novesa
+    call print_string_16
+    mov byte [cfg_vesa], 0
+    jmp VBEdone
+
+
+	; mov edi, VBEModeInfoBlock	; VBE data will be stored at this address
+	; mov ax, 0x4F01			; GET SuperVGA MODE INFORMATION - http://www.ctyme.com/intr/rb-0274.htm
 	; CX queries the mode, it should be in the form 0x41XX as bit 14 is set for LFB and bit 8 is set for VESA mode
 	; 0x4112 is 640x480x24bit, 0x4129 should be 32bit
 	; 0x4115 is 800x600x24bit, 0x412E should be 32bit
 	; 0x4118 is 1024x768x24bit, 0x4138 should be 32bit
 	; 0x411B is 1280x1024x24bit, 0x413D should be 32bit
-	mov cx, 0x4118			; Put your desired mode here
+	; mov cx, 0x411B			; Put your desired mode here
 	mov bx, cx			; Mode is saved to BX for the set command later
 	int 0x10
 

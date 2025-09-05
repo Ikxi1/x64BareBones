@@ -73,9 +73,13 @@ void * initializeKernelBinary() {
 }
 
 int main() {
-	nv_init();
+	ncPrint("what", 1);
 
-	nv_rainbow();
+	// nv_init();
+
+	// nv_rainbow();
+
+	ncPrint("what", 1);
 
 	return 0;
 }

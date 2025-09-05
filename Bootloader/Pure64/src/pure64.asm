@@ -96,7 +96,7 @@ clearcs:
 
 	jmp 8:start32			; Jump to 32-bit protected mode
 
-; 16-bit function to print a sting to the screen
+; 16-bit function to print a string to the screen
 print_string_16:			; Output string in SI to screen
 	pusha
 	mov ah, 0x0E			; http://www.ctyme.com/intr/rb-0106.htm

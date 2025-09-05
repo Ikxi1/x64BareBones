@@ -3,7 +3,22 @@ extern main
 extern initializeKernelBinary
 
 loader:
-
+	; trying to print some memory, such as VBEModeInfoBlock.XResolution
+	; but it's just 0, maybe because I don't turn on VESA mode?
+	; mov rax, 'hello'
+	; mov rsi, 0x200000
+	; mov [rsi], qword rax
+	; mov [rsi + 5], byte 13
+	; mov [rsi + 6], byte 'h'
+	; mov [rsi + 7], byte 13
+	; call os_print_string
+	; mov rsi, 0x0000000000005C00
+	; mov rax, rsi
+	; add rax, 18
+	; movzx rax, byte [rax]
+	; call os_int_to_string
+	; mov rsi, rdi
+	; call os_print_string
 
 	call initializeKernelBinary	; Set up the kernel binary, and get thet stack address
 	mov rsp, rax				; Set up the stack with the returned address
@@ -55,10 +70,114 @@ os_print_string_done:
 os_print_char:
 	push rdi
 
-	mov rdi, [screen_cursor_offset]
+	mov rdi, [0x0000000000005A00 + 8]
 	stosb
-	add qword [screen_cursor_offset], 2	; Add 2 (1 byte for char and 1 byte for attribute)
+	add qword [0x0000000000005A00 + 8], 2	; Add 2 (1 byte for char and 1 byte for attribute)
 
 	pop rdi
+	ret
+; -----------------------------------------------------------------------------
+
+
+; -----------------------------------------------------------------------------
+; os_print_newline -- Reset cursor to start of next line and scroll if needed
+;  IN:	Nothing
+; OUT:	Nothing, all registers perserved
+os_print_newline:
+	push rax
+
+	mov ah, 0			; Set the cursor x value to 0
+	mov al, [0x0000000000005A00 + 387]	; Grab the cursor y value
+	cmp al, 24			; Compare to see if we are on the last line
+	je os_print_newline_scroll	; If so then we need to scroll the sreen
+
+	inc al				; If not then we can go ahead an increment the y value
+	jmp os_print_newline_done
+
+os_print_newline_scroll:
+	mov ax, 0x0000			; If we have reached the end then wrap back to the front
+
+os_print_newline_done:
+	call os_move_cursor		; update the cursor
+
+	pop rax
+	ret
+; -----------------------------------------------------------------------------
+
+
+; -----------------------------------------------------------------------------
+; os_move_cursor -- Moves the virtual cursor in text mode
+;  IN:	AH, AL = row, column
+; OUT:	Nothing. All registers preserved
+os_move_cursor:
+	push rcx
+	push rbx
+	push rax
+
+	xor ebx, ebx
+	mov [0x0000000000005A00 + 386], ah
+	mov [0x0000000000005A00 + 387], al
+	mov bl, ah
+
+	; Calculate the new offset
+	and rax, 0x00000000000000FF	; only keep the low 8 bits
+	mov cl, 80
+	mul cl				; AX = AL * CL
+	add ax, bx
+	shl ax, 1			; multiply by 2
+
+	add rax, 0x00000000000B8000
+	mov [0x0000000000005A00 + 8], rax
+
+	pop rax
+	pop rbx
+	pop rcx
+	ret
+; -----------------------------------------------------------------------------
+
+
+; -----------------------------------------------------------------------------
+; os_int_to_string -- Convert a binary interger into an string string
+;  IN:	RAX = binary integer
+;	RDI = location to store string
+; OUT:	RDI = pointer to end of string
+;	All other registers preserved
+; Min return value is 0 and max return value is 18446744073709551615 so your
+; string needs to be able to store at least 21 characters (20 for the number
+; and 1 for the string terminator).
+; Adapted from http://www.cs.usfca.edu/~cruse/cs210s09/rax2uint.s
+os_int_to_string:
+	push rdx
+	push rcx
+	push rbx
+	push rax
+	push r8
+
+	mov rbx, 10				; base of the decimal system
+	xor rcx, rcx				; number of digits generated
+os_int_to_string_next_divide:
+	xor rdx, rdx				; RAX extended to (RDX,RAX)
+	div rbx					; divide by the number-base
+	push rdx				; save remainder on the stack
+	inc rcx					; and count this remainder
+	cmp rax, 0x0				; was the quotient zero?
+	jne os_int_to_string_next_divide	; no, do another division
+	mov r8, rcx
+os_int_to_string_next_digit:
+	pop rdx					; else pop recent remainder
+	add dl, '0'				; and convert to a numeral
+	mov [rdi], dl				; store to memory-buffer
+	inc rdi
+	loop os_int_to_string_next_digit	; again for other remainders
+	mov al, 0x00
+	stosb					; Store the null terminator at the end of the string
+	inc r8
+	sub rdi, r8
+
+	pop r8
+	pop rax
+	pop rbx
+	pop rcx
+	pop rdx
 	ret
 ; -----------------------------------------------------------------------------

@@ -8,11 +8,13 @@
 
 ;CONFIG
 cfg_smpinit:		db 1	; By default SMP is enabled. Set to 0 to disable.
-cfg_vesa:		db 0	; By default VESA is disabled. Set to 1 to enable.
+cfg_vesa:		db 1	; By default VESA is disabled. Set to 1 to enable.
 cfg_default:		db 0	; By default we don't need a config file so set to 0. If a config file is found set to 1.
 cfg_e820:		db 1	; By default E820 should be present. Pure64 will set this to 0 if not found/usable.
 cfg_mbr:		db 0	; Did we boot off of a disk with a proper MBR
 cfg_hdd:		db 0	; Was a bootable drive detected
+
+BestMode: dw 0 ; storage for chosen VBE mode
 
 ; Memory locations
 E820Map:		equ 0x0000000000004000
@@ -109,21 +111,21 @@ VBEModeInfoBlock.Reserved2		equ VBEModeInfoBlock + 48	; DD - Reserved - always s
 ; -----------------------------------------------------------------------------
 align 16
 GDTR64:					; Global Descriptors Table Register
-	dw gdt64_end - gdt64 - 1	; limit of GDT (size minus one)
-	dq 0x0000000000001000		; linear address of GDT
+    dw gdt64_end - gdt64 - 1	; limit of GDT (size minus one)
+    dq 0x0000000000001000		; linear address of GDT
 
 gdt64:					; This structure is copied to 0x0000000000001000
 SYS64_NULL_SEL equ $-gdt64		; Null Segment
-	dq 0x0000000000000000
+    dq 0x0000000000000000
 SYS64_CODE_SEL equ $-gdt64		; Code segment, read/execute, nonconforming
-	dq 0x0020980000000000		; 0x00209A0000000000
+    dq 0x0020980000000000		; 0x00209A0000000000
 SYS64_DATA_SEL equ $-gdt64		; Data segment, read/write, expand down
-	dq 0x0000900000000000		; 0x0020920000000000
+    dq 0x0000900000000000		; 0x0020920000000000
 gdt64_end:
 
 IDTR64:					; Interrupt Descriptor Table Register
-	dw 256*16-1			; limit of IDT (size minus one) (4096 bytes - 1)
-	dq 0x0000000000000000		; linear address of IDT
+    dw 256*16-1			; limit of IDT (size minus one) (4096 bytes - 1)
+    dq 0x0000000000000000		; linear address of IDT
 ; -----------------------------------------------------------------------------
 
 
