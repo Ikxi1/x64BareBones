@@ -10,7 +10,7 @@ static const uint32_t videoWidth = 80;
 static const uint32_t videoHeight = 25 ;
 static const uint32_t videoSize = videoWidth * videoHeight;
 // static unsigned short *const videoMax = videoBase + videoSize;
-
+volatile unsigned char *last_key = (unsigned char *)0x000B8088;
 
 void ncPrint(const char * string, uint8_t newline) {
 	for (int i = 0; string[i] != 0; i++)
@@ -24,13 +24,6 @@ void ncPrintChar(char character) {
 	videoCurrent += 2;
 }
 
-// void ncNewline() {
-// 	while((uint64_t)(videoCurrent - videoBase) % (videoWidth * 2) != 0)	{
-// 		ncPrintChar(' ');
-// 		if (videoCurrent - videoBase);
-// 	}
-// }
-
 void ncNewline()
 {
 	do
@@ -39,7 +32,6 @@ void ncNewline()
 	}
 	while((uint64_t)(videoCurrent - videoCurrent) % (videoWidth * 2) != 0);
 }
-
 
 void ncPrintDec(uint64_t value) {
 	ncPrintBase(value, 10);

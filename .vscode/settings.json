@@ -1,7 +1,11 @@
 {
 	"files.associations": {
 		"moduleloader.h": "c",
-		"naiveconsole.h": "c"
+		"naiveconsole.h": "c",
+		"naivekeyboard.h": "c",
+		"stdint.h": "c",
+		"stdbool.h": "c",
+		"lib.h": "c"
 	},
 	"files.exclude": {
     "**/*.o": true,

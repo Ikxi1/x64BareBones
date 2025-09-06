@@ -42,13 +42,18 @@ void nv_rainbow() {
 	unsigned background_colour = 0 << 12;
 	unsigned foreground_colour = 2 << 8;
 	unsigned colour = background_colour | foreground_colour;
-	while (1) {
+	while (l < 255) {
 		for (uint16_t i = 0; i < screen_width; ++i) {
 			for (uint16_t j = 0; j < screen_height; ++j) {
 				nv_plot_pixel(i, j, m);
 			}
 		}
 		++l;
-		m = l << 16 | l << 8 | l;
+		m = (l/2) << 16 | (l*3/4) << 8 | l;
+	}
+	for (uint16_t i = 0; i < screen_width; ++i) {
+		for (uint16_t j = 0; j < screen_height; ++j) {
+			nv_plot_pixel(i, j, COLOUR(0, 255, 0, 0));
+		}
 	}
 }
