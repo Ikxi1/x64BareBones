@@ -65,7 +65,7 @@ keyboard:
     jnz keyboard_done
 
     ; call actual keyboard handling later
-    mov [0x000B8088], al		; Dump the scancode to the screen
+    mov [0x000B8000], al		; Dump the scancode to the screen
 
 keyboard_done:
     mov al, 0x20			; Acknowledge the IRQ
