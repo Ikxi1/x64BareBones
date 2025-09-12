@@ -17,35 +17,35 @@ typedef int (*EntryPoint)();
 
 
 void clearBSS(void * bssAddress, uint64_t bssSize) {
-	memset(bssAddress, 0, bssSize);
+    memset(bssAddress, 0, bssSize);
 }
 
 void *getStackBase() {
-	return (void*)(
-		(uint64_t)&endOfKernel
-		+ PageSize * 8				//The size of the stack itself, 32KiB
-		- sizeof(uint64_t)			//Begin at the top of the stack
-	);
+    return (void*)(
+        (uint64_t)&endOfKernel
+        + PageSize * 8				//The size of the stack itself, 32KiB
+        - sizeof(uint64_t)			//Begin at the top of the stack
+    );
 }
 
 void *initializeKernelBinary() {
-	return getStackBase();
+    return getStackBase();
 }
 
 int main() {
-	ncClear();
-	ncPrint("what", 1);
+    ncClear();
+    ncPrint("what", 1);
 
-    while (1) {
-        if (key_ready) {
-            ncPrintChar(kb_char);
-			key_ready = 0;
-        }
-    }
+    // while (1) {
+    //     if (key_ready) {
+    //         ncPrintChar(kb_char);
+    //         key_ready = 0;
+    //     }
+    // }
 
-	// nv_init();
+    // nv_init();
 
-	// nv_rainbow();
+    // nv_rainbow();
 
-	return 0;
+    return 0;
 }

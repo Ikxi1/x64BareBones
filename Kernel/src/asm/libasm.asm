@@ -25,23 +25,16 @@ cpuVendor:
 	ret
 
 
-gettime:
-	enter 0, 0
-	rdtsc
-	shl rdx, 32
-	add rax, rdx
-	leave
-	ret
-
-
 strlen:
 	; arg 1 = rdi char *string
+	; return = rcx string_length
 	enter 0, 0
 	push rax
 	xor rax, rax
 	xor rcx, rcx
 	cld
 	repne scasb
+	sub rdi, rcx ; reset string pointer
 	sub rcx, 1
 	pop rax
 	leave

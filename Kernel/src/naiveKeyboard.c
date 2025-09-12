@@ -101,8 +101,8 @@ void keyb_irq() {
         if (code < 128) {
             uint8_t val = scancode_lut[code];
             if (val) {
-                kb_char = val;    // store pressed key
-                key_ready = 1;   // signal main loop
+                kb_char = val; // store pressed key
+                key_ready = 1; // signal main loop
             }
         }
     }

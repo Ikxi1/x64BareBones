@@ -39,9 +39,6 @@ void nv_clear(uint32_t color) {
 void nv_rainbow() {
 	uint8_t l = 0;
 	uint32_t m = 0;
-	unsigned background_colour = 0 << 12;
-	unsigned foreground_colour = 2 << 8;
-	unsigned colour = background_colour | foreground_colour;
 	while (l < 255) {
 		for (uint16_t i = 0; i < screen_width; ++i) {
 			for (uint16_t j = 0; j < screen_height; ++j) {
