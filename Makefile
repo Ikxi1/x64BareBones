@@ -1,22 +1,17 @@
-
-all:  bootloader kernel userland image
+all:  bootloader kernel image
 
 bootloader:
 	cd Bootloader; make all
 
 kernel:
-	cd Kernel; make all
+	cd Kernel; ./build.sh
 
-userland:
-	cd Userland; make all
-
-image: kernel bootloader userland
+image: kernel bootloader
 	cd Image; make all
 
 clean:
 	cd Bootloader; make clean
 	cd Image; make clean
-	cd Kernel; make clean
-	cd Userland; make clean
+	cd Kernel; ./clean.sh
 
-.PHONY: bootloader image collections kernel userland all clean
+.PHONY: bootloader image collections kernel all clean

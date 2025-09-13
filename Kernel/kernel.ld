@@ -1,5 +1,5 @@
 OUTPUT_FORMAT("binary")
-ENTRY(loader)
+ENTRY(_loader)
 SECTIONS
 {
 	.text 0x100000 :
@@ -14,7 +14,6 @@ SECTIONS
 	{
 		data = .;
 		*(.data*)
-		endOfKernelBinary = .;
 	}
 	.bss ALIGN(0x1000) : AT(ADDR(.bss))
 	{
