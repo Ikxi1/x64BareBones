@@ -1,6 +1,5 @@
 global cpuVendor
 global strlen
-global gettime
 global inportb
 global outportb
 
@@ -55,4 +54,3 @@ outportb:
 	mov al, sil
 	out dx, al
 	ret
-

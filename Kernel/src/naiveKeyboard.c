@@ -1,7 +1,7 @@
 #include <naiveKeyboard.h>
 
 
-const uint8_t scancode_lut[128] = {
+const char scancode_lut[128] = {
     0,    // 0x00
     27,   // 0x01 ESC
     '1',  // 0x02
@@ -89,17 +89,17 @@ const uint8_t scancode_lut[128] = {
     0,0,0,0,0,0,0,0 // 0x54 - 0x5B unused
 };
 
-volatile uint8_t key_ready = 0;
-uint8_t kb_char = 0;
+volatile uint8 key_ready = 0;
+char kb_char = 0;
 
 void keyb_irq() {
-    uint8_t sc = inportb(0x60);
+    uint8 sc = inportb(0x60);
 
     // Only handle key presses (make codes)
     if (!(sc & 0x80)) {
-        uint8_t code = sc & 0x7F;
+        uint8 code = sc & 0x7F;
         if (code < 128) {
-            uint8_t val = scancode_lut[code];
+            char val = scancode_lut[code];
             if (val) {
                 kb_char = val; // store pressed key
                 key_ready = 1; // signal main loop

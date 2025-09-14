@@ -1,5 +1,4 @@
 #include <keyboard.h>
-#include <naiveConsole.h>
 
 static uint32 tags = 0;
 static char ascii[0xFF];

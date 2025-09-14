@@ -2,6 +2,7 @@
 #define KEYBOARD_H_
 
 #include <stdint.h>
+#include <naiveConsole.h>
 
 enum {SHIFT = 0x1, CONTROL = 0x2, ALT = 0x4};
 
