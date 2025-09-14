@@ -8,6 +8,8 @@
 #ifndef INTERRUPTIONHANDLER_H_
 #define INTERRUPTIONHANDLER_H_
 
+#include <stdint.h>
+
 void setupInterrupts(void);
 void int_08_hand(void);
 void int_09_hand(void);

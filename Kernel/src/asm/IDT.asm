@@ -1,4 +1,4 @@
-GLOBAL loadIDT
+gLOBAL loadIDT
 GLOBAL saveIDT
 GLOBAL _Cli
 GLOBAL _Sti
@@ -9,6 +9,7 @@ saveIDT:
     mov EAX, [ESP+4]	;Store in EAX the 6 byte array address
     sidt [EAX]			;Store in the IDT the array
     ret
+
 
 loadIDT:
     lidt    [ESP+4]		; Done loading the IDT

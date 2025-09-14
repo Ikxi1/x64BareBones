@@ -1,0 +1,12 @@
+need_for_kb
+
+IDT.h
+IDT.c
+IDT.asm
+bits.h
+bits.c
+types.h
+interruptHandler.h
+interruptHandler.c
+keyboard.h
+keyboard.c

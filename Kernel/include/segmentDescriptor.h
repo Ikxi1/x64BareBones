@@ -10,15 +10,14 @@
 
 #include "stdint.h"
 
-typedef struct
-{
-	uint16	limitLow;
-	uint16	baseLow;
-	uint8	baseHigh1;
-	uint8	access;
-	uint8	attrib;
-	uint8	baseHigh2;
-}SegmentDescriptor;
+typedef struct {
+    uint16	limitLow;
+    uint16	baseLow;
+    uint8	baseHigh1;
+    uint8	access;
+    uint8	attrib;
+    uint8	baseHigh2;
+} SegmentDescriptor;
 
 /*Access flags*/
 /*Type Flags*/

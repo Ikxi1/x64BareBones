@@ -1,16 +1,16 @@
 #include <naiveConsole.h>
-#include <lib.h>
+// #include <lib.h>
 
-static uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base);
+static uint32 uintToBase(uint64 value, char * buffer, uint32 base);
 
 static char buffer[64] = { '0' };
-static uint8_t *const videoBase = (uint8_t *)0xB8000;
-static uint8_t *videoCurrent = (uint8_t *)0xB8000;
-static const uint32_t videoWidth = 80;
-static const uint32_t videoHeight = 25 ;
-static const uint32_t videoSize = videoWidth * videoHeight;
+static uint8 *const videoBase = (uint8 *)0xB8000;
+static uint8 *videoCurrent = (uint8 *)0xB8000;
+static const uint32 videoWidth = 80;
+static const uint32 videoHeight = 25 ;
+static const uint32 videoSize = videoWidth * videoHeight;
 
-void ncPrint(const char * string, uint8_t newline) {
+void ncPrint(const char * string, uint8 newline) {
     for (int i = 0; string[i] != 0; i++)
         ncPrintChar(string[i]);
 
@@ -24,22 +24,22 @@ void ncPrintChar(char character) {
 
 void ncNewline() {
     do {ncPrintChar(' ');}
-    while((uint64_t)(videoCurrent - videoCurrent) % (videoWidth * 2) != 0);
+    while((uint64)(videoCurrent - videoCurrent) % (videoWidth * 2) != 0);
 }
 
-void ncPrintDec(uint64_t value) {
+void ncPrintDec(uint64 value) {
     ncPrintBase(value, 10);
 }
 
-void ncPrintHex(uint64_t value) {
+void ncPrintHex(uint64 value) {
     ncPrintBase(value, 16);
 }
 
-void ncPrintBin(uint64_t value) {
+void ncPrintBin(uint64 value) {
     ncPrintBase(value, 2);
 }
 
-void ncPrintBase(uint64_t value, uint32_t base) {
+void ncPrintBase(uint64 value, uint32 base) {
     uintToBase(value, buffer, base);
     ncPrint(buffer, 0);
 }
@@ -50,15 +50,15 @@ void ncClear() {
     videoCurrent = videoBase;
 }
 
-static uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base) {
+static uint32 uintToBase(uint64 value, char * buffer, uint32 base) {
     char *p = buffer;
     char *p1, *p2;
-    uint32_t digits = 0;
+    uint32 digits = 0;
 
     //Calculate characters for each digit
     do
     {
-        uint32_t remainder = value % base;
+        uint32 remainder = value % base;
         *p++ = (remainder < 10) ? remainder + '0' : remainder + 'A' - 10;
         digits++;
     }
