@@ -5,10 +5,10 @@ static uint32 uintToBase(uint64 value, char * buffer, uint32 base);
 
 static char buffer[64] = { '0' };
 static uint8 *const videoBase = (uint8 *)0xB8000;
-static uint8 *videoCurrent = (uint8 *)0xB8000;
+static uint8 *const videoMax =  (uint8 *)0xB8FA0;
+static uint8 *videoCurrent =    (uint8 *)0xB8000;
 static const uint32 videoWidth = 80;
-static const uint32 videoHeight = 25 ;
-static const uint32 videoSize = videoWidth * videoHeight;
+static const uint32 videoHeight = 25;
 
 void ncPrint(const char * string, uint8 newline) {
     for (int i = 0; string[i] != 0; i++)
@@ -24,24 +24,27 @@ void ncPrintChar(char character) {
 
 void ncNewline() {
     do {ncPrintChar(' ');}
-    while((uint64)(videoCurrent - videoCurrent) % (videoWidth * 2) != 0);
+    while((uint64)(videoCurrent - videoBase) % (videoWidth * 2) != 0);
+
+    if (videoCurrent >= videoMax)
+        videoCurrent = videoBase;
 }
 
-void ncPrintDec(uint64 value) {
-    ncPrintBase(value, 10);
+void ncPrintDec(uint64 value, uint8 newline) {
+    ncPrintBase(value, 10, newline);
 }
 
-void ncPrintHex(uint64 value) {
-    ncPrintBase(value, 16);
+void ncPrintHex(uint64 value, uint8 newline) {
+    ncPrintBase(value, 16, newline);
 }
 
-void ncPrintBin(uint64 value) {
-    ncPrintBase(value, 2);
+void ncPrintBin(uint64 value, uint8 newline) {
+    ncPrintBase(value, 2, newline);
 }
 
-void ncPrintBase(uint64 value, uint32 base) {
+void ncPrintBase(uint64 value, uint32 base, uint8 newline) {
     uintToBase(value, buffer, base);
-    ncPrint(buffer, 0);
+    ncPrint(buffer, newline);
 }
 
 void ncClear() {
@@ -82,21 +85,21 @@ static uint32 uintToBase(uint64 value, char * buffer, uint32 base) {
     return digits;
 }
 
-void draw_rainbow() {
-    ncClear();
-    unsigned short j = 0;
-    int k = 0;
-    unsigned background_colour = 0 << 12;
-    unsigned foreground_colour = 2 << 8;
-    unsigned colour = background_colour | foreground_colour;
-    while (1) {
-        if (k % 250000000 == 0) {
-            for (unsigned short i = 0; i < videoSize;) {
-                videoBase[i] = colour | j % 0b0000000011111111;
-                i++;
-            }
-            j++;
-        }
-        k++;
-    }
-}
+// void draw_rainbow() {
+//     ncClear();
+//     unsigned short j = 0;
+//     int k = 0;
+//     unsigned background_colour = 0 << 12;
+//     unsigned foreground_colour = 2 << 8;
+//     unsigned colour = background_colour | foreground_colour;
+//     while (1) {
+//         if (k % 250000000 == 0) {
+//             for (unsigned short i = 0; i < videoSize;) {
+//                 videoBase[i] = colour | j % 0b0000000011111111;
+//                 i++;
+//             }
+//             j++;
+//         }
+//         k++;
+//     }
+// }

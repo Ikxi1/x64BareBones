@@ -1,109 +1,56 @@
 #include <naiveKeyboard.h>
+#include <naiveConsole.h>
 
 
-const char scancode_lut[128] = {
-    0,    // 0x00
-    27,   // 0x01 ESC
-    '1',  // 0x02
-    '2',  // 0x03
-    '3',  // 0x04
-    '4',  // 0x05
-    '5',  // 0x06
-    '6',  // 0x07
-    '7',  // 0x08
-    '8',  // 0x09
-    '9',  // 0x0A
-    '0',  // 0x0B
-    '-',  // 0x0C
-    '=',  // 0x0D
-    '\b', // 0x0E Backspace
-    '\t', // 0x0F Tab
-    'q',  // 0x10
-    'w',  // 0x11
-    'e',  // 0x12
-    'r',  // 0x13
-    't',  // 0x14
-    'y',  // 0x15
-    'u',  // 0x16
-    'i',  // 0x17
-    'o',  // 0x18
-    'p',  // 0x19
-    '[',  // 0x1A
-    ']',  // 0x1B
-    '\n', // 0x1C Enter
-    0,    // 0x1D Left Ctrl
-    'a',  // 0x1E
-    's',  // 0x1F
-    'd',  // 0x20
-    'f',  // 0x21
-    'g',  // 0x22
-    'h',  // 0x23
-    'j',  // 0x24
-    'k',  // 0x25
-    'l',  // 0x26
-    ';',  // 0x27
-    '\'', // 0x28
-    '`',  // 0x29
-    0,    // 0x2A Left Shift
-    '\\', // 0x2B
-    'z',  // 0x2C
-    'x',  // 0x2D
-    'c',  // 0x2E
-    'v',  // 0x2F
-    'b',  // 0x30
-    'n',  // 0x31
-    'm',  // 0x32
-    ',',  // 0x33
-    '.',  // 0x34
-    '/',  // 0x35
-    0,    // 0x36 Right Shift
-    '*',  // 0x37 Keypad *
-    0,    // 0x38 Left Alt
-    ' ',  // 0x39 Space
-    0,    // 0x3A Caps Lock
-    0,    // 0x3B F1
-    0,    // 0x3C F2
-    0,    // 0x3D F3
-    0,    // 0x3E F4
-    0,    // 0x3F F5
-    0,    // 0x40 F6
-    0,    // 0x41 F7
-    0,    // 0x42 F8
-    0,    // 0x43 F9
-    0,    // 0x44 F10
-    0,    // 0x45 Num Lock
-    0,    // 0x46 Scroll Lock
-    '7',  // 0x47 Keypad 7
-    '8',  // 0x48 Keypad 8
-    '9',  // 0x49 Keypad 9
-    '-',  // 0x4A Keypad -
-    '4',  // 0x4B Keypad 4
-    '5',  // 0x4C Keypad 5
-    '6',  // 0x4D Keypad 6
-    '+',  // 0x4E Keypad +
-    '1',  // 0x4F Keypad 1
-    '2',  // 0x50 Keypad 2
-    '3',  // 0x51 Keypad 3
-    '0',  // 0x52 Keypad 0
-    '.',  // 0x53 Keypad .
-    0,0,0,0,0,0,0,0 // 0x54 - 0x5B unused
+const uint32 scancode_lut[0xFF] = {
+    0,0,49,50,51,52,53,54,55,56, // 0-9 -- \0 \0 1 2 3 4 5 6 7 8
+    57,48,223,180,8,9,113,119,101,114, // 10-19 -- 9 0 ẞ ´ BACKSPACE HTAB q w e r
+    // ____________________________________
+    // THOSE TWO ZEROES AT THE END ARE JUST PLACEHOLDERS
+    // ------------------------------------
+    116,122,117,105,111,112,252,43,10,0,0 // 20-29 -- t z u i o p ü + ENTER
+    // ,,,,,,,,,, // 30-39 --
+    // ,,,,,,,,,, // 40-49 --
+    // ,,,,,,,,,, // 50-59 --
+    // ,,,,,,,,,, // 60-69 --
+    // ,,,,,,,,,, // 70-79 --
+    // ,,,,,,,,,, // 80-89 --
+    // ,,,,,,,,,, // 90-99 --
+    // ,,,,,,,,,, // 100-109 --
+    // ,,,,,,,,,, // 110-119 --
+    // ,,,,,,,,,, // 120-129 --
+    // ,,,,,,,,,, // 130-139 --
+    // ,,,,,,,,,, // 140-149 --
+    // ,,,,,,,,,, // 150-159 --
+    // ,,,,,,,,,, // 160-169 --
+    // ,,,,,,,,,, // 170-179 --
+    // ,,,,,,,,,, // 180-189 --
+    // ,,,,,,,,,, // 190-199 --
+    // ,,,,,,,,,, // 200-209 --
+    // ,,,,,,,,,, // 210-219 --
+    // ,,,,,,,,,, // 220-229 --
+    // ,,,,,,,,,, // 230-239 --
+    // ,,,,,,,,,, // 240-249 --
+    // ,,,,, // 250-255 --
 };
 
 volatile uint8 key_ready = 0;
 char kb_char = 0;
 
 void keyb_irq() {
-    uint8 sc = inportb(0x60);
+    uint32 sc = inportb(0x60);
+    ncPrintBase(sc, 10, 1);
 
     // Only handle key presses (make codes)
-    if (!(sc & 0x80)) {
-        uint8 code = sc & 0x7F;
-        if (code < 128) {
-            char val = scancode_lut[code];
-            if (val) {
-                kb_char = val; // store pressed key
-                key_ready = 1; // signal main loop
-            }
-        }
-    }
+
+    // if (!(sc & 0x80)) {
+    //     uint8 code = sc & 0x7F;
+    //     if (code < 128) {
+    //         char val = scancode_lut[code];
+    //         if (val) {
+    //             kb_char = val; // store pressed key
+    //             key_ready = 1; // signal main loop
+    //         }
+    //     }
+    // }
 }

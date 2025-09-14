@@ -41,30 +41,30 @@ uint32 getKeyboardStatus() {
 void keyboardHandler(int k) {
     uint8 sc = *((uint8*)&k);
 
-    // if (sc == 0x2A || k == 0x36) {
-    //     tags = tags | SHIFT;
-    //     return;
-    // }
-    // if (sc == 0xAA || sc == 0xB6) { // Shift break
-    //     tags=tags & ~SHIFT;
-    //     return;
-    // }
-    // if (sc == 0x1d || k == 0xE036) {
-    //     tags = tags | CONTROL;
-    //     return;
-    // }
-    // if (sc == 0x9d || sc == 0xB6) { // Control break
-    //     tags = tags & ~CONTROL;
-    //     return;
-    // }
-    // if (sc == 0x38 || sc == 0x54) {
-    //     tags = tags | ALT;
-    //     return;
-    // }
-    // if (sc == 0xB8 || sc == 0xD4) { // Alt break
-    //     tags = tags & ~ALT;
-    //     return;
-    // }
+    if (sc == 0x2A || k == 0x36) {
+        tags = tags | SHIFT;
+        return;
+    }
+    if (sc == 0xAA || sc == 0xB6) { // Shift break
+        tags=tags & ~SHIFT;
+        return;
+    }
+    if (sc == 0x1d || k == 0xE036) {
+        tags = tags | CONTROL;
+        return;
+    }
+    if (sc == 0x9d || sc == 0xB6) { // Control break
+        tags = tags & ~CONTROL;
+        return;
+    }
+    if (sc == 0x38 || sc == 0x54) {
+        tags = tags | ALT;
+        return;
+    }
+    if (sc == 0xB8 || sc == 0xD4) { // Alt break
+        tags = tags & ~ALT;
+        return;
+    }
 
     /*Ignore the other release scancodes*/
     if (sc > 0x81)
@@ -81,11 +81,10 @@ void keyboardHandler(int k) {
     //     return;
     // }
 
-    //if (ascii[k] == '6' && (tags & SHIFT)) {
-    //    feedBuffer('&');
-    //    return;
-    //}
-    // printing here
-    // feedBuffer(ascii[k] + ((tags & SHIFT)? ('A' - 'a'):0 ));
-    ncPrintChar(ascii[k]);
+    if (ascii[k] == '6' && (tags & SHIFT)) {
+       ncPrintChar('&');
+       return;
+    }
+
+    ncPrintChar(ascii[k] + ((tags & SHIFT)? ('A' - 'a'):0 ));
 }
