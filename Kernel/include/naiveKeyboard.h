@@ -7,7 +7,7 @@
 extern char kb_char;       // ASCII of last key pressed
 extern volatile uint8 key_ready;    // flag: 1 = new key pressed
 
-extern const uint32 scancode_lut[0xFF];
+uint32 key_lut[0xFF];
 
 void keyb_irq(void);
 
