@@ -9,10 +9,12 @@ int _main () {
     ncPrint("HEEEEEEELP", 1);
 
     while (1) {
-        if (key_ready == 1) {
-            const char *c = &kb_char;
-            ncPrint(c, 0);
-            key_ready = 0;
+        build_key_event();
+        if (key_event.key != 0) {
+            // const char *c = (const char*)&key_event.key;
+            // ncPrint(c, 0);
+            ncPrintBase(key_event.key, 10, 1);
+            // key_ready = 0;
         }
     }
 
