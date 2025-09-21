@@ -1,14 +1,17 @@
 global keyboard
-global init_keyb
+global init_int
 
 extern keyb_irq
 
-; Set up Keyboard handler
-init_keyb:
+; Set up interrupt handlers
+init_int:
     ; map kb IRQ
+    ; this overwrites Pure64's kb interrupt
     mov rdi, 0x21
     mov rax, keyboard
     call create_gate
+    ; the PIT IRQ
+    ; this overwrites Pure64's RTC interrupt
 
     lidt [IDTR64]
 
@@ -20,7 +23,7 @@ init_keyb:
 init_pic:
     ; Enable specific interrupts
     in al, 0x21
-    mov al, 11111101b		; Enable Keyboard
+    mov al, 11111101b       ; Enable Keyboard
     out 0x21, al
 
     ret
@@ -38,15 +41,15 @@ keyboard:
 
     ; xor rax, rax
 
-    ; in al, 0x60			; Get the scancode from the keyboard
-    ; test al, 0x80
+    ; in al, 0x60           ; Get the scancode from the keyboard
+    ; test al, 0x80         ; check if <128 (ASCII char)
     ; jnz keyboard_done
 
     ; ; call actual keyboard handling later
-    ; mov [0x000B8000], al		; Dump the scancode to the screen
+    ; mov [0x000B8000], al  ; Dump the scancode to the screen
 
 keyboard_done:
-    mov al, 0x20			; Acknowledge the IRQ
+    mov al, 0x20            ; Acknowledge the IRQ
     out 0x20, al
 
     pop rax
