@@ -4,14 +4,16 @@
 #include <stdint.h>
 #include <lib.h>
 
-extern char kb_char;       // ASCII of last key pressed
-extern volatile uint8 key_ready;    // flag: 1 = new key pressed
+// extern char kb_char;       // ASCII of last key pressed
+// extern volatile uint8 key_ready;    // flag: 1 = new key pressed
 
-extern uint32 key_lut[0xFF];
-extern uint32 shift_key_lut[0xFF];
-extern uint32 alt_gr_key_lut[0xFF];
+// extern uint32 key_lut[0xFF];
+// extern uint32 shift_key_lut[0xFF];
+// extern uint32 alt_gr_key_lut[0xFF];
 
-extern uint32 released_key_lut[0xFF];
+// extern uint32 released_key_lut[0xFF];
+
+void init_LUT();
 
 // interrupt request handler / ISR
 void keyb_irq();
@@ -35,7 +37,7 @@ typedef struct key_event{
 } KEY_EVENT;
 
 typedef struct {
-    uint32 *buffer;
+    uint32 buffer[0xF];
     uint8 head;
     uint8 tail;
     uint8 length;

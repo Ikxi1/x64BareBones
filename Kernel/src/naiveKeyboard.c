@@ -2,9 +2,10 @@
 #include <naiveConsole.h>
 
 
-uint32 buf[0xF];
+static uint32 ptr; // testing
+
 CIRC_BUF kb_isr_buf = {
-    .buffer = buf,
+    .buffer = {0},
     .head = 0,
     .tail = 0,
     .length = 0xF
@@ -21,6 +22,7 @@ uint32 alt_gr_key_lut[0xFF] = {0};
 uint32 released_key_lut[0xFF] = {0};
 
 void init_LUT() {
+    ptr = 0;
     // pressed
     // Normal key layout row by row
     //              ESC                   F1                   F2                   F3                   F4                   F5                   F6                   F7                   F8                   F9                  F10                  F11                  F12
@@ -77,7 +79,7 @@ void init_LUT() {
                                                           released_key_lut[158] = 1; released_key_lut[159] = 1; released_key_lut[160] = 1; released_key_lut[161] = 1; released_key_lut[162] = 1; released_key_lut[163] = 1; released_key_lut[164] = 1; released_key_lut[165] = 1; released_key_lut[166] = 1; released_key_lut[167] = 1; released_key_lut[168] = 1; released_key_lut[171] = 1;
     //                                                 <                          y                          x                          c                          v                          b                          n                          m                          ,                          .                          -
                                released_key_lut[214] = 1; released_key_lut[172] = 1; released_key_lut[173] = 1; released_key_lut[174] = 1; released_key_lut[175] = 1; released_key_lut[176] = 1; released_key_lut[177] = 1; released_key_lut[178] = 1; released_key_lut[179] = 1; released_key_lut[180] = 1; released_key_lut[181] = 1;
-    //                                                                        SPACE
+    //                                            2                            SPACE
                                                           released_key_lut[185] = 1;
 
     //                 NUMPAD                                                     *
@@ -113,6 +115,7 @@ void keyb_irq() {
     uint32 sc = inportb(0x60);
     // ncPrintBase(sc, 10, 1);
 
+
     // put scancode into circular buffer to be read OUTSIDE the interrupt
     uint8 next = kb_isr_buf.head + 1;
     if (next >= kb_isr_buf.length) next = 0; // point head to beginning
@@ -128,34 +131,46 @@ void build_key_event() {
     if (next >= kb_isr_buf.length) next = 0; // point tail to beginning
 
     // put data into KEY_EVENT
-
     uint32 c = kb_isr_buf.buffer[kb_isr_buf.tail];
-    // first check, if EXTENDED flag is set
-    // if (key_event.flags & KEY_EXTENDED) {
+    // first check, if D/EXTENDED flag is set
+    if (key_event.flags & KEY_DEXTENDED) {
 
-    // }
-    // else {
+    }
+    else if (key_event.flags & KEY_EXTENDED) {
+
+    }
+    else if (key_event.flags & KEY_SHIFT) {
+        if (key_lut[c] != 0) {
+            key_event.key = shift_key_lut[c];
+        }
+    }
+    // no flags set
+    else {
         // check for char
         if (key_lut[c] != 0) {
             key_event.key = key_lut[c];
         }
-        // else if (c == 42 || c == 54) {
-        //     key_event.flags |= KEY_SHIFT;
-        // }
-        // else if (c == 56) {
-        //     key_event.flags |= KEY_ALT;
-        // }
-        // else if (c == 29) {
-        //     key_event.flags |= KEY_CTRL;
-        // }
-        // else if (c == 58) {
-        //     key_event.flags ^= KEY_CAPS;
-        // }
-        // else if (c == 224) {
-        //     key_event.flags |= KEY_EXTENDED;
-        // }
-    // }
+        else if (released_key_lut[c] != 0) {
+            key_event.key = 0;
+        }
+        else if (c == 42 || c == 54) {
+            key_event.flags |= KEY_SHIFT;
+        }
+        else if (c == 56) {
+            key_event.flags |= KEY_ALT;
+        }
+        else if (c == 29) {
+            key_event.flags |= KEY_CTRL;
+        }
+        else if (c == 58) {
+            key_event.flags ^= KEY_CAPS;
+        }
+        else if (c == 224) {
+            key_event.flags |= KEY_EXTENDED;
+        }
+    }
     // ALT GR, RSHIFT
 
-    kb_isr_buf.tail = next;
+    // kb_isr_buf.tail = next;
+    ptr = 0;
 }
