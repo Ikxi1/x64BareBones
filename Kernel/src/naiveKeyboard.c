@@ -113,7 +113,7 @@ void init_LUT() {
 
 void keyb_irq() {
     uint32 sc = inportb(0x60);
-    // ncPrintBase(sc, 10, 1);
+    ncPrintBase(sc, 10, 1);
 
 
     // put scancode into circular buffer to be read OUTSIDE the interrupt

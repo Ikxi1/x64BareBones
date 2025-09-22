@@ -1,21 +1,28 @@
-global keyboard
 global init_int
 
 extern keyb_irq
+extern pit_irq
+extern timer_init
 
 ; Set up interrupt handlers
 init_int:
+    ; the PIT IRQ
+    ; this overwrites Pure64's RTC interrupt
+    mov rdi, 0x20
+    mov rax, pit_handler
+    call create_gate
+
     ; map kb IRQ
     ; this overwrites Pure64's kb interrupt
     mov rdi, 0x21
     mov rax, keyboard
     call create_gate
-    ; the PIT IRQ
-    ; this overwrites Pure64's RTC interrupt
 
     lidt [IDTR64]
 
     call init_pic
+
+    call timer_init
 
     ret
 
@@ -23,7 +30,7 @@ init_int:
 init_pic:
     ; Enable specific interrupts
     in al, 0x21
-    mov al, 11111101b       ; Enable Keyboard
+    mov al, 11111100b       ; Enable Keyboard 1 and PIT 0
     out 0x21, al
 
     ret
@@ -50,6 +57,25 @@ keyboard:
 
 keyboard_done:
     mov al, 0x20            ; Acknowledge the IRQ
+    out 0x20, al
+
+    pop rax
+    pop rdi
+    iretq
+; -----------------------------------------------------------------------------
+
+
+; -----------------------------------------------------------------------------
+; PIT interrupt. IRQ 0x00, INT 0x20
+align 16
+pit_handler:
+    push rdi
+    push rax
+
+    call pit_irq
+
+pit_done:
+    mov al, 0x20           ; Acknowledge the IRQ
     out 0x20, al
 
     pop rax

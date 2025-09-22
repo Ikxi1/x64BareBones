@@ -58,7 +58,7 @@ static uint32 uintToBase(uint64 value, char * buffer, uint32 base) {
     char *p1, *p2;
     uint32 digits = 0;
 
-    //Calculate characters for each digit
+    // Calculate characters for each digit
     do
     {
         uint32 remainder = value % base;
@@ -70,7 +70,7 @@ static uint32 uintToBase(uint64 value, char * buffer, uint32 base) {
     // Terminate string in buffer.
     *p = 0;
 
-    //Reverse string in buffer.
+    // Reverse string in buffer.
     p1 = buffer;
     p2 = p - 1;
     while (p1 < p2)
