@@ -9,7 +9,7 @@ _loader:
     mov Rsp, stack+STACKSIZE; set up the stac
     cli
     call init_int
-    ; call init_LUT
+    call init_LUT   ; populate the keyboard scancode LUT
     sti
     call _main      ; call kernel proper
 .L1:

@@ -2,7 +2,7 @@
 
 #include <naiveConsole.h>
 
-#define TIMER_TPS 363
+#define TIMER_TPS 1000
 
 #define PIT_A 0x40
 #define PIT_B 0x41
@@ -37,7 +37,7 @@ uint64 timer_get() {
 
 void pit_irq() {
     state.ticks++;
-    ncPrintBase(state.ticks, 10, 1);
+    // ncPrintBase(state.ticks, 10, 1);
 }
 
 void timer_init() {

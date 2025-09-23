@@ -10,24 +10,23 @@ static uint8 *videoCurrent =    (uint8 *)0xB8000;
 static const uint32 videoWidth = 80;
 static const uint32 videoHeight = 25;
 
+void ncPrintChar(char character) {
+    *videoCurrent++ = character;
+    *videoCurrent++ = 0x02; // colour, black background 0, green text 2
+}
+
 void ncPrint(const char * string, uint8 newline) {
     for (int i = 0; string[i] != 0; i++)
         ncPrintChar(string[i]);
 
     if (newline == 1) ncNewline();
-}
-
-void ncPrintChar(char character) {
-    *videoCurrent = character;
-    videoCurrent += 2;
+    if (videoCurrent >= videoMax)
+        videoCurrent = videoBase;
 }
 
 void ncNewline() {
     do {ncPrintChar(' ');}
     while((uint64)(videoCurrent - videoBase) % (videoWidth * 2) != 0);
-
-    if (videoCurrent >= videoMax)
-        videoCurrent = videoBase;
 }
 
 void ncPrintDec(uint64 value, uint8 newline) {
