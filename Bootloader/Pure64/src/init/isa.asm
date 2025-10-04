@@ -120,6 +120,7 @@ rtc_poll:
 
 
     ; get VesaInfoBlock
+    ; how does edi work even?
     mov edi, VesaInfoBlockBuffer
     mov ax, 0x4F00
     int 0x10
@@ -127,52 +128,76 @@ rtc_poll:
     jne VBEfail
 
     ; get video modes
-    push word [VesaInfoBlockBuffer + VesaInfoBlock.VideoModesSegment]
-    pop es
-    mov di, VesaModeInfoBlockBuffer
     mov bx, [VesaInfoBlockBuffer + VesaInfoBlock.VideoModesOffset]
-    mov cx, [bx]
+    mov es, [VesaInfoBlockBuffer + VesaInfoBlock.VideoModesSegment]
+    mov cx, [es:bx]
     cmp cx, 0xFFFF
     je VBEnomodes
 
 mode_loop:
     mov ax, 0x4F01
+    mov edi, VesaModeInfoBlockBuffer
     int 0x10
     cmp ax, 0x004F
     jne VBEfail
 
-    call os_print_newline_16
+    ; print data
+    ; mov ax, [VesaModeInfoBlockBuffer + VesaModeInfoBlock.Width]
+    ; mov di, ScratchBuffer
+    ; call os_int_to_string_16
+    ; mov si, di
+    ; call print_string_16
+    ; mov si, ScratchBuffer
+    ; mov byte [si], 'x'
+    ; mov byte [si+1], 0
+    ; call print_string_16
 
-    ; print width, height, bitdepth
-    mov ax, [VesaModeInfoBlockBuffer + VesaModeInfoBlock.Width]
-    mov di, ScratchBuffer
-    call os_int_to_string_16
-    mov si, di
-    call os_print_string_16
-    mov al, 'x'
-    call os_print_char_16
+    ; mov ax, [VesaModeInfoBlockBuffer + VesaModeInfoBlock.Height]
+    ; mov di, ScratchBuffer
+    ; call os_int_to_string_16
+    ; mov si, di
+    ; call print_string_16
+    ; mov si, ScratchBuffer
+    ; mov byte [si], 'x'
+    ; mov byte [si+1], 0
+    ; call print_string_16
 
-    mov ax, [VesaModeInfoBlockBuffer + VesaModeInfoBlock.Height]
-    mov di, ScratchBuffer
-    call os_int_to_string_16
-    mov si, di
-    call os_print_string_16
-    mov al, 'x'
-    call os_print_char_16
+    ; ; mov al doesn't work for some reason
+    ; ; maybe data stuck in ah
+    ; movzx ax, byte [VesaModeInfoBlockBuffer + VesaModeInfoBlock.BitsPerPixel]
+    ; mov di, ScratchBuffer
+    ; call os_int_to_string_16
+    ; mov si, di
+    ; call print_string_16
+    ; mov si, ScratchBuffer
+    ; mov byte [si], ' '
+    ; mov byte [si+1], 0
+    ; call print_string_16
 
-    mov ax, [VesaModeInfoBlockBuffer + VesaModeInfoBlock.BitsPerPixel]
-    mov di, ScratchBuffer
-    call os_int_to_string_16
-    mov si, di
-    call os_print_string_16
-    call os_print_newline_16
+    ; compare desired resolution with current mode's
+    cmp word [VesaModeInfoBlockBuffer + VesaModeInfoBlock.Width], 1600
+    jne VBEnextmode
+    cmp word [VesaModeInfoBlockBuffer + VesaModeInfoBlock.Height], 900
+    jne VBEnextmode
+    cmp byte [VesaModeInfoBlockBuffer + VesaModeInfoBlock.BitsPerPixel], 32
+    jne VBEnextmode
+
+    ; set mode
+    ; cx contains mode
+    mov bx, cx
+    mov ax, 0x4F02
+    int 0x10
+    cmp ax, 0x004F
+    jne VBEfail
+    jmp VBEdone
 
 
     ; loop over the different modes later
-    ; inc bx
-    ; mov cx, [bx]
-    ; cmp cx, 0xFFFF
-    ; jne mode_loop
+VBEnextmode:
+    add bx, 2
+    mov cx, [es:bx]
+    cmp cx, 0xFFFF
+    jne mode_loop
 
     ; CX queries the mode, it should be in the form 0x41XX as bit 14 is set for LFB and bit 8 is set for VESA mode
     ; 0x4112 is 640x480x24bit,      0x4129 should be 32bit

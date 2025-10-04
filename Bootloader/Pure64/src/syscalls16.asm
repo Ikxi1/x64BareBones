@@ -5,6 +5,9 @@
 ; System Calls
 ; =================================================================
 
+; when including in another file
+; add USE16 before the include, if USE32 or 64 have been called previously
+
 ; -----------------------------------------------------------------------------
 ; os_move_cursor_16 -- Moves the virtual cursor in text mode
 ;  IN:	AH, AL = row, column
@@ -26,8 +29,10 @@ os_move_cursor_16:
     add ax, bx
     shl ax, 1           ; multiply by 2
 
-    add ax, 0xB8000
-    mov [screen_cursor_offset], ax
+; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+; doesn't work at the moment because B8000 is 20 bit
+    ; add ax, 0xB8000
+    ; mov [screen_cursor_offset], ax
 
     pop ax
     pop bx
@@ -99,17 +104,20 @@ os_print_string_done_16:
 ; os_print_char_16 -- Displays a char in 16bit mode
 ;  IN:	AL = char to display
 ; OUT:	Nothing. All registers preserved
+; increment cursor offset and x, if (x >= 79) x = 0; y++;
 os_print_char_16:
     push ax
     push di
 
-    lea ax, [screen_cursor_base]
-    lea di, [screen_cursor_offset]
-
-
+    ; write char to mem
     mov di, [screen_cursor_offset]
     stosb
     add word [screen_cursor_offset], 2	; Add 2 (1 byte for char and 1 byte for attribute)
+
+    ; if (x >= 79 && y >= 24)
+    ; cmp [screen_cursor_x]
+    ; lea ax, [screen_cursor_base]
+    ; lea di, [screen_cursor_offset]
 
     pop di
     ret
