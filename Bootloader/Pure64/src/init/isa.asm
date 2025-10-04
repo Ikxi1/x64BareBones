@@ -115,29 +115,89 @@ rtc_poll:
     out 0xA1, al
 
     ; Configure graphics if requested
-    cmp byte [cfg_vesa], 1		; Check if VESA should be enabled
-    jne VBEdone			; If not then skip VESA init
+    cmp byte [cfg_vesa], 1      ; Check if VESA should be enabled
+    jne VBEdone                 ; If not then skip VESA init
 
-    mov edi, VBEModeInfoBlock	; VBE data will be stored at this address
-    mov ax, 0x4F01			; GET SuperVGA MODE INFORMATION - http://www.ctyme.com/intr/rb-0274.htm
+
+    ; get VesaInfoBlock
+    mov edi, VesaInfoBlockBuffer
+    mov ax, 0x4F00
+    int 0x10
+    cmp ax, 0x004F
+    jne VBEfail
+
+    ; get video modes
+    push word [VesaInfoBlockBuffer + VesaInfoBlock.VideoModesSegment]
+    pop es
+    mov di, VesaModeInfoBlockBuffer
+    mov bx, [VesaInfoBlockBuffer + VesaInfoBlock.VideoModesOffset]
+    mov cx, [bx]
+    cmp cx, 0xFFFF
+    je VBEnomodes
+
+mode_loop:
+    mov ax, 0x4F01
+    int 0x10
+    cmp ax, 0x004F
+    jne VBEfail
+
+    call os_print_newline_16
+
+    ; print width, height, bitdepth
+    mov ax, [VesaModeInfoBlockBuffer + VesaModeInfoBlock.Width]
+    mov di, ScratchBuffer
+    call os_int_to_string_16
+    mov si, di
+    call os_print_string_16
+    mov al, 'x'
+    call os_print_char_16
+
+    mov ax, [VesaModeInfoBlockBuffer + VesaModeInfoBlock.Height]
+    mov di, ScratchBuffer
+    call os_int_to_string_16
+    mov si, di
+    call os_print_string_16
+    mov al, 'x'
+    call os_print_char_16
+
+    mov ax, [VesaModeInfoBlockBuffer + VesaModeInfoBlock.BitsPerPixel]
+    mov di, ScratchBuffer
+    call os_int_to_string_16
+    mov si, di
+    call os_print_string_16
+    call os_print_newline_16
+
+
+    ; loop over the different modes later
+    ; inc bx
+    ; mov cx, [bx]
+    ; cmp cx, 0xFFFF
+    ; jne mode_loop
+
     ; CX queries the mode, it should be in the form 0x41XX as bit 14 is set for LFB and bit 8 is set for VESA mode
-    ; 0x4112 is 640x480x24bit, 0x4129 should be 32bit
-    ; 0x4115 is 800x600x24bit, 0x412E should be 32bit
-    ; 0x4118 is 1024x768x24bit, 0x4138 should be 32bit
-    ; 0x411B is 1280x1024x24bit, 0x413D should be 32bit
-    mov cx, 0x4118			; Put your desired mode here
-    mov bx, cx			; Mode is saved to BX for the set command later
-    int 0x10
+    ; 0x4112 is 640x480x24bit,      0x4129 should be 32bit
+    ; 0x4115 is 800x600x24bit,      0x412E should be 32bit
+    ; 0x4118 is 1024x768x24bit,     0x4138 should be 32bit
+    ; 0x411B is 1280x1024x24bit,    0x413D should be 32bit
+    ; mov cx, 0x4118              ; Put your desired mode here
+    ; mov bx, cx                  ; Mode is saved to BX for the set command later
+    ; int 0x10
 
-    cmp ax, 0x004F			; Return value in AX should equal 0x004F if command supported and successful
-    jne VBEfail
-    cmp byte [VBEModeInfoBlock.BitsPerPixel], 24	; Make sure this matches the number of bits for the mode!
-    jne VBEfail			; If set bit mode was unsuccessful then bail out
-    or bx, 0x4000			; Use linear/flat frame buffer model (set bit 14)
-    mov ax, 0x4F02			; SET SuperVGA VIDEO MODE - http://www.ctyme.com/intr/rb-0275.htm
-    int 0x10
-    cmp ax, 0x004F			; Return value in AX should equal 0x004F if supported and successful
-    jne VBEfail
+    ; cmp ax, 0x004F              ; Return value in AX should equal 0x004F if command supported and successful
+    ; jne VBEfail
+    ; cmp byte [VBEModeInfoBlock.BitsPerPixel], 24	; Make sure this matches the number of bits for the mode!
+    ; jne VBEfail                 ; If set bit mode was unsuccessful then bail out
+    ; or bx, 0x4000               ; Use linear/flat frame buffer model (set bit 14)
+    ; mov ax, 0x4F02              ; SET SuperVGA VIDEO MODE - http://www.ctyme.com/intr/rb-0275.htm
+    ; int 0x10
+    ; cmp ax, 0x004F              ; Return value in AX should equal 0x004F if supported and successful
+    ; jne VBEfail
+    jmp VBEdone
+
+VBEnomodes:
+    mov si, msg_novesamodes
+    call print_string_16
+    mov byte [cfg_vesa], 0
     jmp VBEdone
 
 VBEfail:

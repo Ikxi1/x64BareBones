@@ -97,14 +97,16 @@ clearcs:
     jmp 8:start32			; Jump to 32-bit protected mode
 
 ; 16-bit function to print a string to the screen
-print_string_16:			; Output string in SI to screen
+; no screen_cursor functionality
+; could be overwritten by other messages -> not seen
+print_string_16:                ; Output string in SI to screen
     pusha
-    mov ah, 0x0E			; http://www.ctyme.com/intr/rb-0106.htm
+    mov ah, 0x0E                ; http://www.ctyme.com/intr/rb-0106.htm
 print_string_16_repeat:
-    lodsb				; Get char from string
+    lodsb                       ; Get char from string
     cmp al, 0
-    je print_string_16_done		; If char is zero, end of string
-    int 0x10			; Otherwise, print it
+    je print_string_16_done     ; If char is zero, end of string
+    int 0x10                    ; Otherwise, print it
     jmp print_string_16_repeat
 print_string_16_done:
     popa
@@ -550,11 +552,11 @@ nextIOAPIC:
     jne nextIOAPIC
 
     mov di, 0x5080
-    mov eax, [VBEModeInfoBlock.PhysBasePtr]		; Base address of video memory (if graphics mode is set)
+    mov eax, [VesaModeInfoBlockBuffer + VesaModeInfoBlock.LFBAddress]		; Base address of video memory (if graphics mode is set)
     stosd
-    mov eax, [VBEModeInfoBlock.XResolution]		; X and Y resolution (16-bits each)
+    mov eax, [VesaModeInfoBlockBuffer + VesaModeInfoBlock.Width]		; X and Y resolution (16-bits each)
     stosd
-    mov al, [VBEModeInfoBlock.BitsPerPixel]		; Color depth
+    mov al, [VesaModeInfoBlockBuffer + VesaModeInfoBlock.BitsPerPixel]		; Color depth
     stosb
 
 ; Initialization is now complete... write a message to the screen
@@ -622,6 +624,8 @@ clearnext:
     xor r14, r14
     xor r15, r15
 
+    mov rax, VesaModeInfoBlockBuffer
+
     jmp 0x0000000000100000		; Jump to the kernel
 
 
@@ -630,6 +634,9 @@ clearnext:
 %include "init/pic.asm"
 %include "init/smp.asm"
 %include "syscalls.asm"
+USE16
+%include "syscalls16.asm"
+USE64
 %include "interrupt.asm"
 %include "sysvar.asm"
 

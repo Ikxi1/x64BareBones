@@ -7,23 +7,25 @@
 
 
 ;CONFIG
-cfg_smpinit:		db 1	; By default SMP is enabled. Set to 0 to disable.
-cfg_vesa:		db 0	; By default VESA is disabled. Set to 1 to enable.
-cfg_default:		db 0	; By default we don't need a config file so set to 0. If a config file is found set to 1.
-cfg_e820:		db 1	; By default E820 should be present. Pure64 will set this to 0 if not found/usable.
-cfg_mbr:		db 0	; Did we boot off of a disk with a proper MBR
-cfg_hdd:		db 0	; Was a bootable drive detected
+cfg_smpinit:		db 1    ; By default SMP is enabled. Set to 0 to disable.
+cfg_vesa:		db 1        ; By default VESA is disabled. Set to 1 to enable.
+cfg_default:		db 0    ; By default we don't need a config file so set to 0. If a config file is found set to 1.
+cfg_e820:		db 1        ; By default E820 should be present. Pure64 will set this to 0 if not found/usable.
+cfg_mbr:		db 0        ; Did we boot off of a disk with a proper MBR
+cfg_hdd:		db 0        ; Was a bootable drive detected
 
 ; Memory locations
 E820Map:		equ 0x0000000000004000
 InfoMap:		equ 0x0000000000005000
 SystemVariables:	equ 0x0000000000005A00
-VBEModeInfoBlock:	equ 0x0000000000005C00	; 256 bytes
-ahci_cmdlist:		equ 0x0000000000070000	; 4096 bytes	0x070000 -> 0x071FFF
-ahci_cmdtable:		equ 0x0000000000072000	; 57344 bytes	0x072000 -> 0x07FFFF
+ScratchBuffer:      equ 0x0000000000005C00  ; if ever needed
+; VBEModeInfoBlock:	equ 0x0000000000005C00  ; 256 bytes
+ahci_cmdlist:		equ 0x0000000000070000  ; 4096 bytes	0x070000 -> 0x071FFF
+ahci_cmdtable:		equ 0x0000000000072000  ; 57344 bytes	0x072000 -> 0x07FFFF
 
 ; DQ - Starting at offset 0, increments by 0x8
 os_ACPITableAddress:	equ SystemVariables + 0x00
+screen_cursor_base:     db 0xB8000
 screen_cursor_offset:	equ SystemVariables + 0x08
 os_LocalX2APICAddress:	equ SystemVariables + 0x10
 os_Counter_Timer:	equ SystemVariables + 0x18
@@ -66,45 +68,137 @@ msg_mb:			db ' MiB]', 0
 msg_startingkernel:	db 'Starting kernel...', 13, 13, 0
 msg_no64:		db 'ERROR: This computer does not support 64-bit mode.', 0
 msg_novesa:		db 'VESA error', 0
+msg_novesamodes:db 'no Vesa modes', 0
 
 ; VESA
 ; Mandatory information for all VBE revisions
-VBEModeInfoBlock.ModeAttributes		equ VBEModeInfoBlock + 0	; DW - mode attributes
-VBEModeInfoBlock.WinAAttributes		equ VBEModeInfoBlock + 2	; DB - window A attributes
-VBEModeInfoBlock.WinBAttributes		equ VBEModeInfoBlock + 3	; DB - window B attributes
-VBEModeInfoBlock.WinGranularity		equ VBEModeInfoBlock + 4	; DW - window granularity in KB
-VBEModeInfoBlock.WinSize		equ VBEModeInfoBlock + 6	; DW - window size in KB
-VBEModeInfoBlock.WinASegment		equ VBEModeInfoBlock + 8	; DW - window A start segment
-VBEModeInfoBlock.WinBSegment		equ VBEModeInfoBlock + 10	; DW - window B start segment
-VBEModeInfoBlock.WinFuncPtr		equ VBEModeInfoBlock + 12	; DD - real mode pointer to window function
-VBEModeInfoBlock.BytesPerScanLine	equ VBEModeInfoBlock + 16	; DW - bytes per scan line
-; Mandatory information for VBE 1.2 and above
-VBEModeInfoBlock.XResolution		equ VBEModeInfoBlock + 18	; DW - horizontal resolution in pixels or characters
-VBEModeInfoBlock.YResolution		equ VBEModeInfoBlock + 20	; DW - vertical resolution in pixels or characters
-VBEModeInfoBlock.XCharSize		equ VBEModeInfoBlock + 22	; DB - character cell width in pixels
-VBEModeInfoBlock.YCharSize		equ VBEModeInfoBlock + 23	; DB - character cell height in pixels
-VBEModeInfoBlock.NumberOfPlanes		equ VBEModeInfoBlock + 24	; DB - number of memory planes
-VBEModeInfoBlock.BitsPerPixel		equ VBEModeInfoBlock + 25	; DB - bits per pixel
-VBEModeInfoBlock.NumberOfBanks		equ VBEModeInfoBlock + 26	; DB - number of banks
-VBEModeInfoBlock.MemoryModel		equ VBEModeInfoBlock + 27	; DB - memory model type
-VBEModeInfoBlock.BankSize		equ VBEModeInfoBlock + 28	; DB - bank size in KB
-VBEModeInfoBlock.NumberOfImagePages	equ VBEModeInfoBlock + 29	; DB - number of image pages
-VBEModeInfoBlock.Reserved		equ VBEModeInfoBlock + 30	; DB - reserved (0x00 for VBE 1.0-2.0, 0x01 for VBE 3.0)
-; Direct Color fields (required for direct/6 and YUV/7 memory models)
-VBEModeInfoBlock.RedMaskSize		equ VBEModeInfoBlock + 31	; DB - size of direct color red mask in bits
-VBEModeInfoBlock.RedFieldPosition	equ VBEModeInfoBlock + 32	; DB - bit position of lsb of red mask
-VBEModeInfoBlock.GreenMaskSize		equ VBEModeInfoBlock + 33	; DB - size of direct color green mask in bits
-VBEModeInfoBlock.GreenFieldPosition	equ VBEModeInfoBlock + 34	; DB - bit position of lsb of green mask
-VBEModeInfoBlock.BlueMaskSize		equ VBEModeInfoBlock + 35	; DB - size of direct color blue mask in bits
-VBEModeInfoBlock.BlueFieldPosition	equ VBEModeInfoBlock + 36	; DB - bit position of lsb of blue mask
-VBEModeInfoBlock.RsvdMaskSize		equ VBEModeInfoBlock + 37	; DB - size of direct color reserved mask in bits
-VBEModeInfoBlock.RsvdFieldPosition	equ VBEModeInfoBlock + 38	; DB - bit position of lsb of reserved mask
-VBEModeInfoBlock.DirectColorModeInfo	equ VBEModeInfoBlock + 39	; DB - direct color mode attributes
-; Mandatory information for VBE 2.0 and above
-VBEModeInfoBlock.PhysBasePtr		equ VBEModeInfoBlock + 40	; DD - physical address for flat memory frame buffer
-VBEModeInfoBlock.Reserved1		equ VBEModeInfoBlock + 44	; DD - Reserved - always set to 0
-VBEModeInfoBlock.Reserved2		equ VBEModeInfoBlock + 48	; DD - Reserved - always set to 0
+; VBEModeInfoBlock.ModeAttributes		equ VBEModeInfoBlock + 0	; DW - mode attributes
+; VBEModeInfoBlock.WinAAttributes		equ VBEModeInfoBlock + 2	; DB - window A attributes
+; VBEModeInfoBlock.WinBAttributes		equ VBEModeInfoBlock + 3	; DB - window B attributes
+; VBEModeInfoBlock.WinGranularity		equ VBEModeInfoBlock + 4	; DW - window granularity in KB
+; VBEModeInfoBlock.WinSize		equ VBEModeInfoBlock + 6	; DW - window size in KB
+; VBEModeInfoBlock.WinASegment		equ VBEModeInfoBlock + 8	; DW - window A start segment
+; VBEModeInfoBlock.WinBSegment		equ VBEModeInfoBlock + 10	; DW - window B start segment
+; VBEModeInfoBlock.WinFuncPtr		equ VBEModeInfoBlock + 12	; DD - real mode pointer to window function
+; VBEModeInfoBlock.BytesPerScanLine	equ VBEModeInfoBlock + 16	; DW - bytes per scan line
+; ; Mandatory information for VBE 1.2 and above
+; VBEModeInfoBlock.XResolution		equ VBEModeInfoBlock + 18	; DW - horizontal resolution in pixels or characters
+; VBEModeInfoBlock.YResolution		equ VBEModeInfoBlock + 20	; DW - vertical resolution in pixels or characters
+; VBEModeInfoBlock.XCharSize		equ VBEModeInfoBlock + 22	; DB - character cell width in pixels
+; VBEModeInfoBlock.YCharSize		equ VBEModeInfoBlock + 23	; DB - character cell height in pixels
+; VBEModeInfoBlock.NumberOfPlanes		equ VBEModeInfoBlock + 24	; DB - number of memory planes
+; VBEModeInfoBlock.BitsPerPixel		equ VBEModeInfoBlock + 25	; DB - bits per pixel
+; VBEModeInfoBlock.NumberOfBanks		equ VBEModeInfoBlock + 26	; DB - number of banks
+; VBEModeInfoBlock.MemoryModel		equ VBEModeInfoBlock + 27	; DB - memory model type
+; VBEModeInfoBlock.BankSize		equ VBEModeInfoBlock + 28	; DB - bank size in KB
+; VBEModeInfoBlock.NumberOfImagePages	equ VBEModeInfoBlock + 29	; DB - number of image pages
+; VBEModeInfoBlock.Reserved		equ VBEModeInfoBlock + 30	; DB - reserved (0x00 for VBE 1.0-2.0, 0x01 for VBE 3.0)
+; ; Direct Color fields (required for direct/6 and YUV/7 memory models)
+; VBEModeInfoBlock.RedMaskSize		equ VBEModeInfoBlock + 31	; DB - size of direct color red mask in bits
+; VBEModeInfoBlock.RedFieldPosition	equ VBEModeInfoBlock + 32	; DB - bit position of lsb of red mask
+; VBEModeInfoBlock.GreenMaskSize		equ VBEModeInfoBlock + 33	; DB - size of direct color green mask in bits
+; VBEModeInfoBlock.GreenFieldPosition	equ VBEModeInfoBlock + 34	; DB - bit position of lsb of green mask
+; VBEModeInfoBlock.BlueMaskSize		equ VBEModeInfoBlock + 35	; DB - size of direct color blue mask in bits
+; VBEModeInfoBlock.BlueFieldPosition	equ VBEModeInfoBlock + 36	; DB - bit position of lsb of blue mask
+; VBEModeInfoBlock.RsvdMaskSize		equ VBEModeInfoBlock + 37	; DB - size of direct color reserved mask in bits
+; VBEModeInfoBlock.RsvdFieldPosition	equ VBEModeInfoBlock + 38	; DB - bit position of lsb of reserved mask
+; VBEModeInfoBlock.DirectColorModeInfo	equ VBEModeInfoBlock + 39	; DB - direct color mode attributes
+; ; Mandatory information for VBE 2.0 and above
+; VBEModeInfoBlock.PhysBasePtr		equ VBEModeInfoBlock + 40	; DD - physical address for flat memory frame buffer
+; VBEModeInfoBlock.Reserved1		equ VBEModeInfoBlock + 44	; DD - Reserved - always set to 0
+; VBEModeInfoBlock.Reserved2		equ VBEModeInfoBlock + 48	; DD - Reserved - always set to 0
 
+
+; https://wiki.osdev.org/VESA_Video_Modes
+struc VesaModeInfoBlock             ; VesaModeInfoBlock_size = 256 bytes
+    .ModeAttributes		resw 1
+    .FirstWindowAttributes	resb 1
+    .SecondWindowAttributes	resb 1
+    .WindowGranularity	resw 1      ; in KB
+    .WindowSize		resw 1          ; in KB
+    .FirstWindowSegment	resw 1      ; 0 if not supported
+    .SecondWindowSegment	resw 1  ; 0 if not supported
+    .WindowFunctionPtr	resd 1
+    .BytesPerScanLine	resw 1
+
+    ;	Added in Revision 1.2
+    .Width			resw 1		; in pixels(graphics)/columns(text)
+    .Height			resw 1		; in pixels(graphics)/columns(text)
+    .CharWidth		resb 1		; in pixels
+    .CharHeight		resb 1		; in pixels
+    .PlanesCount		resb 1
+    .BitsPerPixel		resb 1
+    .BanksCount		resb 1
+    .MemoryModel		resb 1		; http://www.ctyme.com/intr/rb-0274.htm#Table82
+    .BankSize		resb 1		; in KB
+    .ImagePagesCount	resb 1		; count - 1
+    .Reserved1		resb 1		; equals 0 in Revision 1.0-2.0, 1 in 3.0
+
+    .RedMaskSize		resb 1
+    .RedFieldPosition	resb 1
+    .GreenMaskSize		resb 1
+    .GreenFieldPosition	resb 1
+    .BlueMaskSize		resb 1
+    .BlueFieldPosition	resb 1
+    .ReservedMaskSize	resb 1
+    .ReservedMaskPosition	resb 1
+    .DirectColorModeInfo	resb 1
+
+    ;	Added in Revision 2.0
+    .LFBAddress		resd 1
+    .OffscreenMemoryOffset	resd 1
+    .OffscreenMemorySize	resw 1		; in KB
+    .Reserved2		resb 206	; available in Revision 3.0, but useless for now
+endstruc
+
+ALIGN(4)
+VesaModeInfoBlockBuffer:	istruc VesaModeInfoBlock
+        times 256 db 0
+    iend
+
+; VesaInfoBlock_size = 512 bytes
+
+struc VesaInfoBlock
+    .Signature		resb 4 ; must be 'VESA'
+    .Version		resw 1
+    .OEMNamePtr		resd 1
+    .Capabilities		resd 1
+
+    .VideoModesOffset	resw 1
+    .VideoModesSegment	resw 1
+
+    .CountOf64KBlocks	resw 1
+    .OEMSoftwareRevision	resw 1
+    .OEMVendorNamePtr	resd 1
+    .OEMProductNamePtr	resd 1
+    .OEMProductRevisionPtr	resd 1
+    .Reserved		resb 222
+    .OEMData		resb 256
+endstruc
+
+ALIGN(4)
+    VesaInfoBlockBuffer: istruc VesaInfoBlock
+        at VesaInfoBlock.Signature, db "VESA"
+        times 508 db 0
+    iend
+
+; VesaInfoBlockBuffer resb 512
+
+; VesaInfoBlock.Signature              equ VesaInfoBlockBuffer       ; db 4 must be 'VESA'
+; VesaInfoBlock.Version                equ VesaInfoBlockBuffer + 4   ; dw 1
+; VesaInfoBlock.OEMNamePtr             equ VesaInfoBlockBuffer + 6   ; dd 1
+; VesaInfoBlock.Capabilities           equ VesaInfoBlockBuffer + 10  ; dd 1
+;
+; VesaInfoBlock.VideoModesOffset       equ VesaInfoBlockBuffer + 14  ; dw 1
+; VesaInfoBlock.VideoModesSegment      equ VesaInfoBlockBuffer + 16  ; dw 1
+;
+; VesaInfoBlock.CountOf64KBlocks       equ VesaInfoBlockBuffer + 18  ; dw 1
+; VesaInfoBlock.OEMSoftwareRevision    equ VesaInfoBlockBuffer + 20  ; dw 1
+; VesaInfoBlock.OEMVendorNamePtr       equ VesaInfoBlockBuffer + 22  ; dd 1
+; VesaInfoBlock.OEMProductNamePtr      equ VesaInfoBlockBuffer + 26  ; dd 1
+; VesaInfoBlock.OEMProductRevisionPtr  equ VesaInfoBlockBuffer + 30  ; dd 1
+; VesaInfoBlock.Reserved               equ VesaInfoBlockBuffer + 34  ; db 222
+; VesaInfoBlock.OEMData                equ VesaInfoBlockBuffer + 256 ; db 256
 
 ; -----------------------------------------------------------------------------
 align 16
