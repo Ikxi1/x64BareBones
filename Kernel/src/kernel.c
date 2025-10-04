@@ -28,6 +28,7 @@ int _main () {
 
         uint64 end_time = timer_get();
         while ((end_time - start_time) < 1000/60) {
+            __asm__("hlt");
             end_time = timer_get();
         }
         if (end_time - start_time > 1000/60) {

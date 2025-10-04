@@ -35,20 +35,12 @@ void nv_clear(uint32 color) {
 }
 
 void nv_rainbow() {
-    uint8 l = 0;
-    uint32 m = 0;
-    // while (l < 255) {
-    //     for (uint16 i = 0; i < screen_width; ++i) {
-    //         for (uint16 j = 0; j < screen_height; ++j) {
-    //             nv_plot_pixel(i, j, m);
-    //         }
-    //     }
-    //     ++l;
-    //     m = (l/2) << 16 | (l*3/4) << 8 | l;
-    // }
+    static uint8 l = 0;
+    static uint32 m = 0;
     for (uint16 i = 0; i < screen_width; ++i) {
         for (uint16 j = 0; j < screen_height; ++j) {
-            nv_plot_pixel(i, j, COLOUR(0, 255, 0, 0));
+            nv_plot_pixel(i, j, COLOUR(0, l, 0, 0));
         }
     }
+    ++l;
 }
