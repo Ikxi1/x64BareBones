@@ -42,11 +42,14 @@ int iisalpha(int c) {
 }
 
 
-void * memcpy (void * dst, void const * src, int len) {
-    char *cdst = dst;
+void *memcpy (void *dst, void const *src, int size) {
+    // can be optimized later on with words, dw and qw
+    // maybe more if SSE allows
+    char *cdst = dst; // new pointer, cause the original won't be incremented
+                      // could also theoretically subtract len later instead
     char const *csrc = src;
 
-    while (len-- > 0)
+    while (size-- > 0)
         *cdst++ = *csrc++;
 
     return dst;
