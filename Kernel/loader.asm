@@ -10,7 +10,7 @@ STACKSIZE equ 0x4000        ; that's 16k.
 _loader:
     mov qword [VesaModeInfoBlockBuffer], rax
 
-    mov Rsp, stack+STACKSIZE; set up the stac
+    mov Rsp, stack+STACKSIZE ; set up the stac
     cli
     call init_int
     call init_LUT   ; populate the keyboard scancode LUT

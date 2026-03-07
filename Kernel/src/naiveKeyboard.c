@@ -4,6 +4,7 @@
 
 static uint32 ptr; // testing
 
+/* circular buffer for keyboard events */
 CIRC_BUF kb_isr_buf = {
     .buffer = {0},
     .head = 0,
@@ -111,65 +112,67 @@ void init_LUT() {
 // 224 42 224 77 arrow_right
 // 224 42 224 83 delete
 
+
 void keyb_irq() {
-    uint32 sc = inportb(0x60);
-    // ncPrintBase(sc, 10, 1);
+      uint32 sc = inportb(0x60);
+      // ncPrintBase(sc, 10, 1);
 
 
-    // put scancode into circular buffer to be read OUTSIDE the interrupt
-    uint8 next = kb_isr_buf.head + 1;
-    if (next >= kb_isr_buf.length) next = 0; // point head to beginning
-    if (next == kb_isr_buf.tail) return; // buffer full, discard data
-    kb_isr_buf.buffer[kb_isr_buf.head] = sc;
-    kb_isr_buf.head = next;
+      // put scancode into circular buffer to be read OUTSIDE the interrupt
+      uint8 next = kb_isr_buf.head + 1;
+      if (next >= kb_isr_buf.length) next = 0; // point head to beginning
+      if (next == kb_isr_buf.tail) return; // buffer full, discard data
+      kb_isr_buf.buffer[kb_isr_buf.head] = sc;
+      kb_isr_buf.head = next;
 }
 
+
 void build_key_event() {
-    uint8 next;
-    if (kb_isr_buf.head == kb_isr_buf.tail) return; // no data available
-    next = kb_isr_buf.tail + 1;
-    if (next >= kb_isr_buf.length) next = 0; // point tail to beginning
+      uint8 next;
+      if (kb_isr_buf.head == kb_isr_buf.tail) return; // no data available
+      next = kb_isr_buf.tail + 1;
+      if (next >= kb_isr_buf.length) next = 0; // point tail to beginning
 
-    // put data into KEY_EVENT
-    uint32 c = kb_isr_buf.buffer[kb_isr_buf.tail];
-    // first check, if D/EXTENDED flag is set
-    if (key_event.flags & KEY_DEXTENDED) {
+      // put data into KEY_EVENT
+      uint32 c = kb_isr_buf.buffer[kb_isr_buf.tail];
+      // first check, if D/EXTENDED flag is set
+      if (key_event.flags & KEY_DEXTENDED) {
 
-    }
-    else if (key_event.flags & KEY_EXTENDED) {
+      }
+      else if (key_event.flags & KEY_EXTENDED) {
 
-    }
-    else if (key_event.flags & KEY_SHIFT) {
-        if (key_lut[c] != 0) {
-            key_event.key = shift_key_lut[c];
-        }
-    }
-    // no flags set
-    else {
-        // check for char
-        if (key_lut[c] != 0) {
-            key_event.key = key_lut[c];
-        }
-        else if (released_key_lut[c] != 0) {
-            key_event.key = 0;
-        }
-        else if (c == 42 || c == 54) {
-            key_event.flags |= KEY_SHIFT;
-        }
-        else if (c == 56) {
-            key_event.flags |= KEY_ALT;
-        }
-        else if (c == 29) {
-            key_event.flags |= KEY_CTRL;
-        }
-        else if (c == 58) {
-            key_event.flags ^= KEY_CAPS;
-        }
-        else if (c == 224) {
-            key_event.flags |= KEY_EXTENDED;
-        }
-    }
-    // ALT GR, RSHIFT
+      }
+      else if (key_event.flags & KEY_SHIFT) {
+            if (key_lut[c] != 0) {
+                  key_event.key = shift_key_lut[c];
+            }
+      }
+      // no flags set
+      else {
+            // check for char
+            if (key_lut[c] != 0) {
+                  key_event.key = key_lut[c];
+            }
+            else if (released_key_lut[c] != 0) {
+                  key_event.key = 0;
+            }
+            else if (c == 42 || c == 54) {
+                  key_event.flags |= KEY_SHIFT;
+            }
+            else if (c == 56) {
+                  key_event.flags |= KEY_ALT;
+            }
+            else if (c == 29) {
+                  key_event.flags |= KEY_CTRL;
+            }
+            else if (c == 58) {
+                  key_event.flags ^= KEY_CAPS;
+            }
+            else if (c == 224) {
+                  key_event.flags |= KEY_EXTENDED;
+            }
+      }
+      // ALT GR, RSHIFT
 
-    kb_isr_buf.tail = next;
+      kb_isr_buf.tail = next;
 }

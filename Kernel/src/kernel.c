@@ -14,17 +14,17 @@ int _main () {
 
         uint64 start_time = timer_get();
 
-        nv_rainbow();
+        // nv_rainbow();
 
         // ncPrintBase(start_time, 10, 1);
 
-        // build_key_event();
-        // if (key_event.key != 0) {
-        //     const char *c = (const char*)&key_event.key;
-        //     ncPrint((const char*)&key_event.key, 0);
-        //     // ncPrintBase(key_event.key, 10, 1);
-        //     key_event.key = 0;
-        // }
+        build_key_event();
+        if (key_event.key != 0) {
+            const char *c = (const char*)&key_event.key;
+            ncPrint((const char*)&key_event.key, 0);
+            // ncPrintBase(key_event.key, 10, 1);
+            key_event.key = 0;
+        }
 
         uint64 end_time = timer_get();
         while ((end_time - start_time) < 1000/60) {
