@@ -13,11 +13,23 @@
 
 // extern uint32 released_key_lut[0xFF];
 
+/* init_LUT
+
+initializes all the LUTs for the key presses.
+*/
 void init_LUT();
 
-// interrupt request handler / ISR
+/* keyb_irq
+
+Interrupt Request Handler / Interrupt Service Routine
+for the keyboard.
+*/
 void keyb_irq();
-// build KEY_EVENT from the circular buffer
+
+/* build_key_event
+
+Build KEY_EVENT from the circular buffer.
+*/
 void build_key_event();
 
 #define KEY_DEXTENDED 0b0000001000000000
@@ -36,8 +48,10 @@ typedef struct key_event{
     uint32 key;
 } KEY_EVENT;
 
-typedef struct {
-    uint32 buffer[0xF];
+#define CIRC_BUF_LEN 0xF
+
+typedef struct circ_buf{
+    uint32 buffer[CIRC_BUF_LEN];
     uint8 head;
     uint8 tail;
     uint8 length;
@@ -45,4 +59,4 @@ typedef struct {
 
 extern KEY_EVENT key_event;
 
-#endif
+#endif // NAIVE_KEYBOARD_H

@@ -14,4 +14,4 @@ uint8 inportb(uint16 port);
 /* outportb: writes one byte to an I/O port */
 void outportb(uint16 port, uint8 data);
 
-#endif
+#endif // LIB_H
