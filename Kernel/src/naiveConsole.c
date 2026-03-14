@@ -17,18 +17,18 @@ void ncPrintChar(char character) {
 
 void ncPrint(const char * string, uint8 newline) {
       switch (*string) {
-            case 0x08: {
-                  videoCurrent -= 1;
+            case 0x08: { // BACKSPACE
+                  videoCurrent--;
                   *videoCurrent-- = 0;
                   break;
             }
 
-            case 0x0A: {
+            case 0x0A: { // ENTER
                   ncNewline();
                   break;
             }
 
-            case 0x20:{
+            case 0x20: { // SPACE
                   *videoCurrent++ = 0;
                   *videoCurrent++ = 0x02;
                   break;
