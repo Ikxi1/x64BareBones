@@ -116,7 +116,7 @@ void init_LUT() {
 
 void keyb_irq() {
       uint32 sc = inportb(0x60);
-      ncPrintBase(sc, 10, 1);
+      // ncPrintBase(sc, 10, 1);
 
       // put scancode into circular buffer to be read OUTSIDE the interrupt
       uint8 next = kb_isr_buf.head + 1;
@@ -136,30 +136,13 @@ void build_key_event() {
       if (next >= kb_isr_buf.length) next = 0;
 
       // put data into KEY_EVENT
-      uint32 c = kb_isr_buf.buffer[kb_usr_buf.tail];
+      uint32 c = kb_isr_buf.buffer[kb_isr_buf.tail];
 
-      switch (key_event.flags) {
-
-            KEY_SHIFT:
-            KEY_CAPS: {
-                  key_event.key = shift_key_lut[c];
-                  break;
-            }
-
-            // these just fall thrhough for now
-            KEY_DEXTENDED:
-            KEY_EXTENDED:
-            KEY_CTRL:
-            KEY_ALT:
-            KEY_ALT_GR:
-            default: {
-                  switch (c) {
-
-                        default:
-                              break;
-                  }
-                  break;
-            }
+      if (key_lut[c] != 0) {
+            key_event.key = key_lut[c];
+      }
+      else if (released_key_lut[c] != 0) {
+            key_event.key = 0;
       }
 
       kb_isr_buf.tail = next;
