@@ -13,8 +13,8 @@ _loader:
       cli
 
       jrcxz .L1
-      ;mov qword [VesaModeInfoBlockBuffer], rax
-      ;call nv_init    ; graphics mode
+      mov qword [VesaModeInfoBlockBuffer], rax
+      call nv_init    ; graphics mode
 .L1:
       call init_int
       call init_LUT   ; populate the keyboard scancode LUT

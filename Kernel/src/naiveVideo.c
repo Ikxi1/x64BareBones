@@ -69,7 +69,8 @@ void nv_rainbow() {
 }
 
 
-// not ready, i want malloc first
+// not ready, i want malloc first to make the second buffer
+// can't an array with a runtime variable
 void nv_swap_framebuffer() {
 
 

@@ -86,7 +86,7 @@ check_A20:
       jne VBEdone                         ; If not then skip VESA init
 
       ; get VesaInfoBlock
-      mov edi, VesaInfoBlockBuffer
+      mov di, VesaInfoBlockBuffer
       mov ax, 0x4F00
       int 0x10
       cmp ax, 0x004F
@@ -102,10 +102,12 @@ check_A20:
       ; counter for modes
       mov si, ScratchBuffer+8
       mov byte [si], 0
+      mov dword [si+24], "vi"
+      mov dword [si+40], "de"
 
 mode_loop:
       mov ax, 0x4F01
-      mov edi, VesaModeInfoBlockBuffer
+      mov di, VesaModeInfoBlockBuffer
       int 0x10
       cmp ax, 0x004F
       jne VBEfail
@@ -183,6 +185,19 @@ VBEnextmode:
       cmp cx, 0xFFFF
       jne mode_loop
 
+      pusha
+      mov ax, 0x0200
+      mov bx, 0    ; page
+      mov dh, 24   ; row
+      mov dl, 0    ; column
+      int 0x10
+      popa
+
+      mov si, ScratchBuffer
+      mov byte [si], '0'
+      mov byte [si+1], 0
+      call print_string_16
+
 ; need to unmask IRQ1 and enable interrupts (sti)
 ; don't forget to mask later again and cli
 VBEselectmode:
@@ -225,40 +240,65 @@ L2:
       ; save selected mode
       mov si, ScratchBuffer+16
       mov [si], dl
-      ; loop over modes again, but this time set mode in dl
-      xor al, al
-mode_loop2:
-      cmp al, dl
-      jne L4
 
-      mov ax, 0x4F01
-      mov edi, VesaModeInfoBlockBuffer
+      ; get VesaInfoBlock
+      mov di, VesaInfoBlockBuffer
+      mov ax, 0x4F00
       int 0x10
       cmp ax, 0x004F
-      jne VBEfail ; sadly fails
-      jmp VBEselectmodedone
-L4:
-      inc al
+      jne VBEfail
+
+      ; get video modes
+      mov bx, [VesaInfoBlockBuffer + VesaInfoBlock.VideoModesOffset]
+      mov es, [VesaInfoBlockBuffer + VesaInfoBlock.VideoModesSegment]
+      mov cx, [es:bx]
+      cmp cx, 0xFFFF
+      je VBEnomodes
+      ; loop over modes again, but this time set mode in dl
+      xor dh, dh
+mode_loop2:
+      mov ax, 0x4F01
+      mov di, VesaModeInfoBlockBuffer
+      int 0x10
+      cmp ax, 0x004F
+      jne VBEfail
+
+      cmp dh, dl
+      jne VBEselectmodedone
+      inc dh
       jmp mode_loop2
 
-L3:
+L3:                ; print selected mode number
+      ; move cursor to bottom right
+      pusha
+      mov ax, 0x0200
+      mov bx, 0    ; page
+      mov dh, 24   ; row
+      mov dl, 0    ; column
+      int 0x10
+      popa
+
       movzx ax, dl
       mov di, ScratchBuffer
       call os_int_to_string_16
-
       mov si, di
       call print_string_16
 
       mov si, ScratchBuffer
-      mov byte [si], 0
+      mov byte [si], ' '
+      mov byte [si+1], 0
       call print_string_16
 
       jmp VBEselectmodeloop
 
 VBEselectmodedone:
       cli
-
-jmp VBEdone
+      mov bx, cx
+      mov ax, 0x4F02
+      int 0x10
+      cmp ax, 0x004F
+      jne VBEfail
+      jmp VBEdone
 
 VBEnomodes:
       mov si, msg_novesamodes
@@ -270,6 +310,10 @@ VBEfail:
       mov si, msg_novesa
       call print_string_16
       mov byte [cfg_vesa], 0		; Clear the VESA config as it was not successful
+halt:
+      hlt
+      jmp halt
+
 
 VBEdone:
 
