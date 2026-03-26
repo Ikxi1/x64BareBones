@@ -264,7 +264,11 @@ mode_loop2:
       jne VBEfail
 
       cmp dh, dl
-      jne VBEselectmodedone
+      je VBEselectmode2
+
+      add bx, 2
+      mov cx, [es:bx]
+      cmp cx, 0xFFFF
       inc dh
       jmp mode_loop2
 
@@ -291,7 +295,7 @@ L3:                ; print selected mode number
 
       jmp VBEselectmodeloop
 
-VBEselectmodedone:
+VBEselectmode2:
       cli
       mov bx, cx
       mov ax, 0x4F02
