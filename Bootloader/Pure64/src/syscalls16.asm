@@ -151,7 +151,7 @@ os_print_char_hex_16:
 
 
 ; -----------------------------------------------------------------------------
-; os_int_to_string_16 -- Convert a binary interger into an string string in 16bit mode
+; os_int_to_string_16 -- Convert a binary integer into an string string in 16bit mode
 ; IN:   RAX = binary integer
 ;       RDI = pointer to string
 ; OUT:  RDI = pointer to string zero-terminated

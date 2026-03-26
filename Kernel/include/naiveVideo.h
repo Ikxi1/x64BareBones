@@ -3,11 +3,11 @@
 
 #include <stdint.h>
 
-#define COLOUR(r,g,b,a) \
-    (((uint8)(r) << 24) | \
-    ((uint8)(g) << 16)  | \
-    ((uint8)(b) << 8)   | \
-    (uint8)(a))
+#define COLOUR(a,r,g,b) \
+    (((uint8)(a) << 24) | \
+    ((uint8)(r) << 16)  | \
+    ((uint8)(g) << 8)   | \
+    (uint8)(b))
 
 
 struct VBEModeInfo {

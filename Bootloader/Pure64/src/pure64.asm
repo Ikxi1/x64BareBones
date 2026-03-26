@@ -625,6 +625,7 @@ clearnext:
     xor r15, r15
 
     mov rax, VesaModeInfoBlockBuffer
+    mov rcx, cfg_vesa
 
     jmp 0x0000000000100000		; Jump to the kernel
 
