@@ -1,8 +1,11 @@
+%include "macros.inc"
+
 global init_int
 
 extern keyb_irq
 extern pit_irq
 extern timer_init
+extern schedule
 
 ; Set up interrupt handlers
 init_int:
@@ -44,20 +47,20 @@ keyboard:
     push rdi
     push rax
 
+    ; pushaq
+
     call keyb_irq
 
-    ; xor rax, rax
-
-    ; in al, 0x60           ; Get the scancode from the keyboard
-    ; test al, 0x80         ; check if <128 (ASCII char)
-    ; jnz keyboard_done
-
-    ; ; call actual keyboard handling later
-    ; mov [0x000B8000], al  ; Dump the scancode to the screen
+    ; testing process switching
+    ; mov rdi, rsp
+    ; call schedule
+    ; mov rsp, rax
 
 keyboard_done:
     mov al, 0x20            ; Acknowledge the IRQ
     out 0x20, al
+
+    ; popaq
 
     pop rax
     pop rdi

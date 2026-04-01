@@ -22,4 +22,12 @@ typedef unsigned short int      uint16;
 typedef unsigned int            uint32;
 typedef unsigned long long int  uint64;
 
+typedef unsigned long int       uintptr;
+
+typedef uint8                   bool;
+#define true                    1
+#define false                   0
+
+#define null                    0;
+
 #endif /* STDINT_H_ */

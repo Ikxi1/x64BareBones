@@ -2,6 +2,10 @@
 #include <naiveKeyboard.h>
 #include <naiveTimer.h>
 #include <naiveVideo.h>
+#include <naiveMemory.h>
+
+
+extern uint8 endOfKernel;
 
 
 int _main () {
@@ -10,6 +14,8 @@ int _main () {
 
       ncPrint("HEEEEEEELP", 1);
 
+       // *array
+
       while (1) {
 
             uint64 start_time = timer_get();
@@ -17,16 +23,16 @@ int _main () {
             // ncPrintBase(start_time, 10, 1);
 
             build_key_event();
-            // if (key_event.key != 0) {
-            //       const char *c = (const char*)&key_event.key;
-            //       // ncPrint((const char*)&key_event.key, 0);
-            //       // ncPrintBase(key_event.key, 10, 1);
-            //       key_event.key = 0;
-            // }
+            if (key_event.key != 0) {
+                  const char *c = (const char*)&key_event.key;
+                  ncPrint((const char*)&key_event.key, 0);
+                  // ncPrintBase(key_event.key, 10, 1);
+                  key_event.key = 0;
+            }
 
-            nv_rainbow();
+            // nv_rainbow();
 
-            key_event.key = 0;
+            // key_event.key = 0;
 
             uint64 end_time = timer_get();
             while ((end_time - start_time) < 1000/60) {

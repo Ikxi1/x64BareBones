@@ -12,7 +12,7 @@ c_files=$(find . -type f -name '*.c')
 for src in $asm_files; do
     obj="${src%.asm}.o"
     echo "Assembling $src -> $obj"
-    nasm -g -F dwarf -f elf64 "$src" -o "$obj"
+    nasm -g -F dwarf -f elf64 "$src" -o "$obj" -I asm/
 done
 
 for src in $c_files; do
