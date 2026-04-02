@@ -109,21 +109,17 @@ static uint32 uintToBase(uint64 value, char * buffer, uint32 base) {
       return digits;
 }
 
-// void draw_rainbow() {
-//       ncClear();
-//       unsigned short j = 0;
-//       int k = 0;
-//       unsigned background_colour = 0 << 12;
-//       unsigned foreground_colour = 2 << 8;
-//       unsigned colour = background_colour | foreground_colour;
-//       while (1) {
-//             if (k % 250000000 == 0) {
-//                   for (unsigned short i = 0; i < videoSize;) {
-//                         videoBase[i] = colour | j % 0b0000000011111111;
-//                         i++;
-//                   }
-//                   j++;
-//             }
-//             k++;
-//       }
-// }
+void ncRainbow() {
+      // ncClear();
+      static unsigned short j = 0;
+      // int k = 0;
+      unsigned background_colour = 0 << 12;
+      unsigned foreground_colour = 2 << 8;
+      unsigned colour = background_colour | foreground_colour;
+      for (unsigned short i = 0; i < videoMax;)
+      {
+            videoBase[i] = colour | j % 0b0000000011111111;
+            i++;
+      }
+      j++;
+}

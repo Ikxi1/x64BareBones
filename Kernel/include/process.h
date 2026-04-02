@@ -3,21 +3,27 @@
 
 #include <stdint.h>
 
-typedef uint64 (*processCode)(uint64 * argv, char ** argc);
+#define MAX_PROCESSES 16
 
-typedef struct {
-    void *stack;
-    void *heap;
-    uint64 rsp;
-    uint64 parentPID; // if the process is started by another process, which one to return to
-} process;
+typedef struct process {
+      void *stack;
+      void *heap;
+      uint64 rsp;
+      // uint64 parentPID; // if the process is started by another process, which one to return to
+} Process;
 
-uint64 startProcess(processCode p, uint64 attached, uint64 argc, char **argv);
+typedef struct circ_buf_proc{
+      uint32 buffer[MAX_PROCESSES];
+      Process head;
+      Process tail;
+      uint8 length;
+} CIRC_BUF_PROC;
 
-void setupProcessTable();
+typedef struct registers{
+      uint64 r15,r14,r13,r12,r11,r10,r9,r8,
+             rdi,rsi,rpb,rdx,rcx,rbx,rax
+} Registers;
 
-void endProcess();
+uint64 startProcess(void *function_ptr);
 
-process *getProcess(uint64 PID);
-
-#endif
+#endif // PROCESS_H

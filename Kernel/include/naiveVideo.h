@@ -48,14 +48,6 @@ struct VBEModeInfo {
 	uint8 reserved1[206];
 } __attribute__ ((packed));
 
-// can't be used anymore, cause the data is not at 0x5C00 anymore
-// #define VBEModeInfoBlock   ((uint8*)0x0000000000005C00)
-// #define VBE_XRES           (*(uint16*)(VBEModeInfoBlock + 18))
-// #define VBE_YRES           (*(uint16*)(VBEModeInfoBlock + 20))
-// #define VBE_BPP            (*(uint8*)(VBEModeInfoBlock + 25))
-// #define VBE_PITCH          (*(uint16*)(VBEModeInfoBlock + 16)) // BytesPerScanLine
-// #define VBE_PHYSBASE       (*(uint32*)(VBEModeInfoBlock + 40))
-
 typedef unsigned long uintptr;
 
 void nv_init();

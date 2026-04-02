@@ -161,23 +161,6 @@ mode_loop:
       inc di
       mov [ScratchBuffer+8], di
 
-      ; compare desired resolution with current mode's
-      ;cmp word [VesaModeInfoBlockBuffer + VesaModeInfoBlock.Width], 2560
-      ;jne VBEnextmode
-      ;cmp word [VesaModeInfoBlockBuffer + VesaModeInfoBlock.Height], 1600
-      ;jne VBEnextmode
-      ;cmp byte [VesaModeInfoBlockBuffer + VesaModeInfoBlock.BitsPerPixel], 32
-      ;jne VBEnextmode
-
-      ; set mode
-      ; cx contains mode
-      ;mov bx, cx
-      ;mov ax, 0x4F02
-      ;int 0x10
-      ;cmp ax, 0x004F
-      ;jne VBEfail
-      ;jmp VBEdone
-
       ; loop over the different modes later
 VBEnextmode:
       add bx, 2

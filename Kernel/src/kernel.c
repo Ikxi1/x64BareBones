@@ -14,7 +14,7 @@ int _main () {
 
       ncPrint("HEEEEEEELP", 1);
 
-      // *array
+      // start the two processes and then switch them in the while loop
 
       while (1) {
 
@@ -31,6 +31,7 @@ int _main () {
             }
 
             // nv_rainbow();
+            ncRainbow();
 
             // key_event.key = 0;
 

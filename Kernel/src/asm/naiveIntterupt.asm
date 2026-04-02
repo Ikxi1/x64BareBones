@@ -44,10 +44,10 @@ init_pic:
 ; This IRQ runs whenever there is input on the keyboard
 align 16
 keyboard:
-    push rdi
-    push rax
+    ;push rdi
+    ;push rax
 
-    ; pushaq
+    pushaq
 
     call keyb_irq
 
@@ -60,10 +60,10 @@ keyboard_done:
     mov al, 0x20            ; Acknowledge the IRQ
     out 0x20, al
 
-    ; popaq
+    popaq
 
-    pop rax
-    pop rdi
+    ;pop rax
+    ;pop rdi
     iretq
 ; -----------------------------------------------------------------------------
 
