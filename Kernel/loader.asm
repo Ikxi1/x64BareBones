@@ -4,6 +4,7 @@ EXTERN _main
 extern init_int
 extern init_LUT
 extern nv_init
+extern heap_init
 
 STACKSIZE equ 0x4000        ; that's 16k.
 
@@ -16,6 +17,7 @@ _loader:
       mov qword [VesaModeInfoBlockBuffer], rax
       call nv_init    ; graphics mode
 .L1:
+      call heap_init
       call init_int
       call init_LUT   ; populate the keyboard scancode LUT
       sti

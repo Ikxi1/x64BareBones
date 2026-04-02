@@ -14,7 +14,7 @@ int _main () {
 
       ncPrint("HEEEEEEELP", 1);
 
-       // *array
+      // *array
 
       while (1) {
 
