@@ -1,6 +1,4 @@
 %macro pushaq 0
-    pushfq          ; save RFLAGS
-
     push rax
     push rbx
     push rcx
@@ -35,6 +33,4 @@
     pop rcx
     pop rbx
     pop rax
-
-    popfq           ; restore RFLAGS
 %endmacro

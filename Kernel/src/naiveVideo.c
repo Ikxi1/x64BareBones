@@ -3,24 +3,25 @@
 #include <naiveKeyboard.h>
 
 static uint8 *framebuffer = 0;
+static uint64 framebuffer_size = 0;
 // static uint8 *backbuffer = 0;
 static uint16 screen_width = 0;
 static uint16 screen_height = 0;
 static uint8  screen_bpp = 0;
 static uint16 pitch = 0;
-
 extern uint64 *VesaModeInfoBlockBuffer;
 
 
 void nv_init() {
       struct VBEModeInfo *info = (struct VBEModeInfo*)VesaModeInfoBlockBuffer;
 
-      screen_width  = info->width;
-      screen_height = info->height;
-      screen_bpp    = info->bpp;
-      pitch         = info->pitch;
-      framebuffer   = (uint8*)(uintptr)info->framebuffer; // map physical -> direct linear
-      // backbuffer    = ;
+      screen_width     = info->width;
+      screen_height    = info->height;
+      screen_bpp       = info->bpp;
+      pitch            = info->pitch;
+      framebuffer      = (uint8*)(uintptr)info->framebuffer; // map physical -> direct linear
+      framebuffer_size = screen_height * pitch;
+      backbuffer       = (uint8 *)malloc(framebuffer_size);
 }
 
 
@@ -42,30 +43,32 @@ void nv_clear(uint32 color) {
 }
 
 
+// void nv_rainbow() {
+//       static uint8 l = 0;
+//       for (uint16 i = 0; i < screen_width; ++i) {
+//             for (uint16 j = 0; j < screen_height; ++j) {
+//                   nv_plot_pixel(i, j, COLOUR(0,l,0,0));
+//             }
+//       }
+//       ++l;
+// }
+
+
 void nv_rainbow() {
-      static uint8 l = 0;
-      // uint32 c = 0;
-      // switch (key_event.key) {
-      //       case 'a': {
-      //             c = COLOUR(0,l,0,0);
-      //       } break;
+    static uint8 l = 0;
 
-      //       case 's': {
-      //             c = COLOUR(0,0,l,0);
-      //       } break;
+    uint32 color = COLOUR(0, l, 0, 0);
+    uint32 *row = (uint32*)framebuffer;
 
-      //       case 'd': {
-      //             c = COLOUR(0,0,0,l);
-      //       } break;
+    for (uint16 y = 0; y < screen_height; ++y) {
+        uint32 *p = (uint32*)((uint8*)row + y * pitch);
 
-      //       default: break;
-      // }
-      for (uint16 i = 0; i < screen_width; ++i) {
-            for (uint16 j = 0; j < screen_height; ++j) {
-                  nv_plot_pixel(i, j, COLOUR(0,l,0,0));
-            }
-      }
-      ++l;
+        for (uint16 x = 0; x < screen_width; ++x) {
+            p[x] = color;
+        }
+    }
+
+    ++l;
 }
 
 

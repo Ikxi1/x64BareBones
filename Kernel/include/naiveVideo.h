@@ -48,8 +48,6 @@ struct VBEModeInfo {
 	uint8 reserved1[206];
 } __attribute__ ((packed));
 
-typedef unsigned long uintptr;
-
 void nv_init();
 void nv_plot_pixel(uint16 x, uint16 y, uint32 color);
 void nv_clear(uint32 color);

@@ -5,6 +5,8 @@
 
 #define MAX_PROCESSES 16
 
+#define STACK_SIZE 16384
+
 typedef struct process {
       void *stack;
       void *heap;
@@ -25,5 +27,7 @@ typedef struct registers{
 } Registers;
 
 uint64 startProcess(void *function_ptr);
+
+void *push_stack(void *rsp, void *data, uint64 size);
 
 #endif // PROCESS_H

@@ -30,3 +30,27 @@ void *malloc(uint64 size)
       heap_ptr = (uintptr *)next;
       return (void *)cur;
 }
+
+
+void memcpy(void *ptr, void *data, uint64 size)
+{
+      uint64 c = 0;
+      uint8 *p = (uint8 *)ptr;
+      uint8 *d = (uint8 *)data;
+
+      // try 8 byte alignment later
+      // if (size % 8 != 0)
+      // {
+      //
+      //       while ((size-c) % 8 != 0)
+      //       {
+      //             c++;
+      //       }
+      // }
+
+      while (c < size)
+      {
+            p[c] = d[c];
+            c++;
+      }
+}
