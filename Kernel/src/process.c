@@ -18,6 +18,7 @@ void initProcess(void *function_ptr)
 
       new_process.stack = malloc(STACK_SIZE);
       new_process.stack += STACK_SIZE;
+      new_process.rsp = (uint64)new_process.stack;
 
       // all these will be popped by popaq (GP registers)
       // and iretq (the rest)
