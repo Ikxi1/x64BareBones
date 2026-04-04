@@ -16,7 +16,7 @@ int strncmp(char * s1, char * s2, int size);
 /*Identico a strcpy de la biblioteca estandar*/
 char * strcpy(char * dest , char * orig);
 
-void * memcpy (void * dst, void const * src, int len);
+// void * memcpy (void * dst, void const * src, int len);
 
 #endif
 

@@ -1,6 +1,7 @@
 #include <schedule.h>
 #include <stdint.h>
 #include <naiveConsole.h>
+#include <process.h>
 
 
 void *schedule()
@@ -9,26 +10,11 @@ void *schedule()
       if (b == false)
       {
             b = true;
-            return *func1;
+            return &process_list[0].rsp;
       }
-      else if (b == true) {
+      else
+      {
             b = false;
-      }
-      return *func2;
-}
-
-
-void func1 ()
-{
-      while (1) {
-            ncPrint("func1", 0);
-      }
-}
-
-
-void func2 ()
-{
-      while (1) {
-            ncPrint("func2", 0);
+            return &process_list[1].rsp;
       }
 }

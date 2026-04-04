@@ -9,6 +9,7 @@ extern uintptr *heap_ptr;
 
 void heap_init();
 void *malloc(uint64 size);
-void memcpy(void *ptr, void *data, uint64 size);
+void memcpy(void *ptr, const void *data, uint64 size);
+
 
 #endif // NAIVEMEMORY_H

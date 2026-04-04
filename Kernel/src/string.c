@@ -42,15 +42,15 @@ int iisalpha(int c) {
 }
 
 
-void *memcpy (void *dst, void const *src, int size) {
-    // can be optimized later on with words, dw and qw
-    // maybe more if SSE allows
-    char *cdst = dst; // new pointer, cause the original won't be incremented
-                      // could also theoretically subtract len later instead
-    char const *csrc = src;
+// void *memcpy (void *dst, void const *src, int size) {
+//     // can be optimized later on with words, dw and qw
+//     // maybe more if SSE allows
+//     char *cdst = dst; // new pointer, cause the original won't be incremented
+//                       // could also theoretically subtract len later instead
+//     char const *csrc = src;
 
-    while (size-- > 0)
-        *cdst++ = *csrc++;
+//     while (size-- > 0)
+//         *cdst++ = *csrc++;
 
-    return dst;
-}
+//     return dst;
+// }

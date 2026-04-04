@@ -52,9 +52,9 @@ keyboard:
     call keyb_irq
 
     ; testing process switching
-    ; mov rdi, rsp
-    ; call schedule
-    ; mov rsp, rax
+    mov rdi, rsp
+    call schedule
+    mov rsp, rax
 
 keyboard_done:
     mov al, 0x20            ; Acknowledge the IRQ

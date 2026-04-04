@@ -1,10 +1,11 @@
 #include <naiveVideo.h>
+#include <naiveMemory.h>
 #include <naiveConsole.h>
-#include <naiveKeyboard.h>
+// #include <naiveKeyboard.h>
 
 static uint8 *framebuffer = 0;
 static uint64 framebuffer_size = 0;
-// static uint8 *backbuffer = 0;
+static uint8 *backbuffer = 0;
 static uint16 screen_width = 0;
 static uint16 screen_height = 0;
 static uint8  screen_bpp = 0;
