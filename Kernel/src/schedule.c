@@ -10,11 +10,11 @@ void *schedule()
       if (b == false)
       {
             b = true;
-            return &process_list[0].rsp;
+            return process_list[0].rsp;
       }
       else
       {
             b = false;
-            return &process_list[1].rsp;
+            return process_list[1].rsp;
       }
 }

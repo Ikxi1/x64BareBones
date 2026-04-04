@@ -17,8 +17,7 @@ void initProcess(void *function_ptr)
       };
 
       new_process.stack = malloc(STACK_SIZE);
-      new_process.stack += STACK_SIZE;
-      new_process.rsp = (uint64)new_process.stack;
+      new_process.rsp = (uint8 *)new_process.stack + STACK_SIZE;
 
       // all these will be popped by popaq (GP registers)
       // and iretq (the rest)
@@ -32,7 +31,7 @@ void initProcess(void *function_ptr)
       __asm__ volatile ("mov %%cs, %0" : "=r"(kcs64));
       new_process.rsp = push_stack(new_process.rsp, &kcs64, sizeof(uint64));
 
-      // interrupt pointer
+      // instruction pointer
       new_process.rsp = push_stack(new_process.rsp, &function_ptr, sizeof(function_ptr));
 
       // clean registers for the process
@@ -43,10 +42,9 @@ void initProcess(void *function_ptr)
 }
 
 
-uint64 push_stack(uint64 rsp, const void *data, uint64 size)
+uint8 *push_stack(uint8 *rsp, const void *data, uint64 size)
 {
-      uint8 *r = (uint8 *)rsp;
-      r = (uint8 *)r - size;
-      memcpy(r, data, size);
-      return (uint64)r;
+      rsp -= size;
+      memcpy(rsp, data, size);
+      return rsp;
 }

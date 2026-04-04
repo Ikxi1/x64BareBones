@@ -11,7 +11,7 @@ typedef struct process {
       uint64 pid;
       void *stack;
       void *heap;
-      uint64 rsp;
+      uint8 *rsp;
       // uint64 parentPID; // if the process is started by another process, which one to return to
 } Process;
 
@@ -31,6 +31,6 @@ typedef struct registers{
 
 void initProcess(void *function_ptr);
 
-uint64 push_stack(uint64 rsp, const void *data, uint64 size);
+uint8 *push_stack(uint8 *rsp, const void *data, uint64 size);
 
 #endif // PROCESS_H
