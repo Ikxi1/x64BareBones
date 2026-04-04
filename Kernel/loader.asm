@@ -1,16 +1,20 @@
-GLOBAL _loader
+GLOBAL _lowüader
 global VesaModeInfoBlockBuffer
 EXTERN _main
 extern init_int
 extern init_LUT
 extern nv_init
 extern heap_init
+extern initProcess
 
 STACKSIZE equ 0x4000        ; that's 16k.
 
 _loader:
       ; important to have this first, apparently
       mov Rsp, stack+STACKSIZE ; set up the stac
+      mov rdi, extern
+      call initProcess
+      
       cli
 
       jrcxz .L1
@@ -21,7 +25,7 @@ _loader:
       call init_int
       call init_LUT   ; populate the keyboard scancode LUT
       sti
-      call _main      ; call kernel proper
+      ;call _main      ; call kernel proper
 .L0:
       hlt             ; halt machine should kernel return
       JMP .L0

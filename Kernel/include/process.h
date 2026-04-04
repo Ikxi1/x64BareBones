@@ -10,7 +10,7 @@
 typedef struct process {
       uint64 pid;
       void *stack;
-      void *heap;
+      // void *heap;
       uint8 *rsp;
       // uint64 parentPID; // if the process is started by another process, which one to return to
 } Process;

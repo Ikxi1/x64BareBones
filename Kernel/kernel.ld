@@ -1,26 +1,42 @@
-OUTPUT_FORMAT("binary")
+OUTPUT_FORMAT(elf64-x86-64)
 ENTRY(_loader)
+
 SECTIONS
 {
-	.text 0x100000 :
-	{
-		text = .;
-		*(.text*)
-		. = ALIGN(0x1000);
-		rodata = .;
-		*(.rodata*)
-	}
-	.data ALIGN(0x1000) : AT(ADDR(.data))
-	{
-		data = .;
-		*(.data*)
-	}
-	.bss ALIGN(0x1000) : AT(ADDR(.bss))
-	{
-		bss = .;
-		*(.bss*)
-		*(EXCLUDE_FILE (*.o) COMMON)
-	}
-	. = ALIGN(0x1000);
-	endOfKernel = .;
+    . = 0x100000;
+
+    /* Code */
+    .text :
+    {
+        text = .;
+        *(.text*)
+    }
+
+    /* Read-only data */
+    . = ALIGN(0x1000);
+    .rodata :
+    {
+        rodata = .;
+        *(.rodata*)
+    }
+
+    /* Writable data */
+    . = ALIGN(0x1000);
+    .data :
+    {
+        data = .;
+        *(.data*)
+    }
+
+    /* BSS (no file content) */
+    . = ALIGN(0x1000);
+    .bss :
+    {
+        bss = .;
+        *(.bss*)
+        *(COMMON)
+    }
+
+    . = ALIGN(0x1000);
+    endOfKernel = .;
 }
