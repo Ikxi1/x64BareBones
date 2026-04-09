@@ -1,20 +1,32 @@
-GLOBAL _lowüader
+global _loader
 global VesaModeInfoBlockBuffer
-EXTERN _main
+global process_list
+
+extern _main
 extern init_int
 extern init_LUT
 extern nv_init
 extern heap_init
-extern initProcess
+extern init_processes
+extern func1
+extern func2
+
+; define process struct and list
+%define MAX_PROCESSES 16
+%define PROCESS_SIZE 24    ; struct size in bytes
+; struct as offsets
+%define PROCESS_PID    0
+%define PROCESS_STACK  8
+%define PROCESS_RSP    16
 
 STACKSIZE equ 0x4000        ; that's 16k.
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 _loader:
       ; important to have this first, apparently
-      mov Rsp, stack+STACKSIZE ; set up the stac
-      mov rdi, extern
-      call initProcess
-      
+      mov Rsp, stack+STACK_SIZE ; set up the stac
+
       cli
 
       jrcxz .L1
@@ -24,18 +36,31 @@ _loader:
       call heap_init
       call init_int
       call init_LUT   ; populate the keyboard scancode LUT
+
+      lea rdi, [func1]
+      lea rsi, [proess_list]
+      call init_processes
+
       sti
-      ;call _main      ; call kernel proper
+      ; call _main      ; call kernel proper
+      call func2
 .L0:
       hlt             ; halt machine should kernel return
       JMP .L0
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-VesaModeInfoBlockBuffer: dq 1
+VesaModeInfoBlockBuffer: dq 1  ; hold the pointer to the block
+                               ; after the bootloader ran
 
+eokl    dq  STACKSIZE + stack
 
-eokl    dd STACKSIZE + stack
 section .bss
-      align 32
+
+align 8
+process_list:
+    resb PROCESS_SIZE * MAX_PROCESSES
+
+align 32 ; align so high for SIMD
 stack:
       resb STACKSIZE     ; reserve 16k stack on a quadword boundary

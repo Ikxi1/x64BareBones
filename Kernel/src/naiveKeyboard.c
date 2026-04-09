@@ -114,7 +114,8 @@ void init_LUT() {
 // 224 42 224 83 delete
 
 
-void keyb_irq() {
+void keyb_irq()
+{
       uint32 sc = inportb(0x60);
       // ncPrintBase(sc, 10, 1);
 
@@ -127,7 +128,8 @@ void keyb_irq() {
 }
 
 
-void build_key_event() {
+void build_key_event()
+{
       uint8 next;
 
       if (kb_isr_buf.head == kb_isr_buf.tail) return; // no data available

@@ -9,34 +9,34 @@ extern schedule
 
 ; Set up interrupt handlers
 init_int:
-    ; the PIT IRQ
-    ; this overwrites Pure64's RTC interrupt
-    mov rdi, 0x20
-    mov rax, pit_handler
-    call create_gate
+      ; the PIT IRQ
+      ; this overwrites Pure64's RTC interrupt
+      mov rdi, 0x20
+      mov rax, pit_handler
+      call create_gate
 
-    ; map kb IRQ
-    ; this overwrites Pure64's kb interrupt
-    mov rdi, 0x21
-    mov rax, keyboard
-    call create_gate
+      ; map kb IRQ
+      ; this overwrites Pure64's kb interrupt
+      mov rdi, 0x21
+      mov rax, keyboard
+      call create_gate
 
-    lidt [IDTR64]
+      lidt [IDTR64]
 
-    call init_pic
+      call init_pic
 
-    call timer_init
+      call timer_init
 
-    ret
+ret
 
 
 init_pic:
-    ; Enable specific interrupts
-    in al, 0x21
-    mov al, 11111100b       ; Enable Keyboard 1 and PIT 0
-    out 0x21, al
+      ; Enable specific interrupts
+      in al, 0x21
+      mov al, 11111100b       ; Enable Keyboard 1 and PIT 0
+      out 0x21, al
 
-    ret
+ret
 
 
 ; -----------------------------------------------------------------------------
@@ -44,27 +44,21 @@ init_pic:
 ; This IRQ runs whenever there is input on the keyboard
 align 16
 keyboard:
-    ;push rdi
-    ;push rax
+      pushaq
 
-    pushaq
+      call keyb_irq
 
-    call keyb_irq
-
-    ; testing process switching
-    mov rdi, rsp
-    call schedule
-    mov rsp, rax
+      ; testing process switching
+      ;mov rdi, rsp
+      ;call schedule
+      ;mov rsp, rax
 
 keyboard_done:
-    mov al, 0x20            ; Acknowledge the IRQ
-    out 0x20, al
+      mov al, 0x20            ; Acknowledge the IRQ
+      out 0x20, al
 
-    popaq
-
-    ;pop rax
-    ;pop rdi
-    iretq
+      popaq
+iretq
 ; -----------------------------------------------------------------------------
 
 
@@ -72,18 +66,22 @@ keyboard_done:
 ; PIT interrupt. IRQ 0x00, INT 0x20
 align 16
 pit_handler:
-    push rdi
-    push rax
+      pushaq
 
-    call pit_irq
+      call pit_irq
+
+      ; testing process switching
+      mov rdi, rsp
+      lea rsi, [process_list]
+      call schedule
+      mov rsp, rax
 
 pit_done:
-    mov al, 0x20           ; Acknowledge the IRQ
-    out 0x20, al
+      mov al, 0x20           ; Acknowledge the IRQ
+      out 0x20, al
 
-    pop rax
-    pop rdi
-    iretq
+      popaq
+iretq
 ; -----------------------------------------------------------------------------
 
 
@@ -92,19 +90,19 @@ pit_done:
 ; rax = address of handler
 ; rdi = gate # to configure
 create_gate:
-    push rdi
-    push rax
+      push rdi
+      push rax
 
-    shl rdi, 4			; quickly multiply rdi by 16
-    stosw				; store the low word (15..0)
-    shr rax, 16
-    add rdi, 4			; skip the gate marker
-    stosw				; store the high word (31..16)
-    shr rax, 16
-    stosd				; store the high dword (63..32)
+      shl rdi, 4			; quickly multiply rdi by 16
+      stosw				; store the low word (15..0)
+      shr rax, 16
+      add rdi, 4			; skip the gate marker
+      stosw				; store the high word (31..16)
+      shr rax, 16
+      stosd				; store the high dword (63..32)
 
-    pop rax
-    pop rdi
+      pop rax
+      pop rdi
 ret
 ; -----------------------------------------------------------------------------
 

@@ -4,10 +4,8 @@
 
 static uint64 nextPID = 0;
 
-Process process_list[MAX_PROCESSES] = {0};
 
-
-void initProcess(void *function_ptr,)
+void initProcess(void *function_ptr, Process *process_list)
 {
 L1:
       Process new_process = {

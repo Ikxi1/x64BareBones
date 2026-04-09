@@ -1,9 +1,9 @@
 #include <schedule.h>
 #include <naiveConsole.h>
-#include <process.h>
 
 
-uint64 schedule(uint8 *rsp)
+
+uint64 schedule(uint8 *rsp, Process *process_list)
 {
       static bool b = false;
       if (b == false)

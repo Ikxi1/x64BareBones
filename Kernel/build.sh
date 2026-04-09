@@ -4,8 +4,8 @@ set -x
 
 cd src
 
-ELF_OUT="../kernel.elf"
-BIN_OUT="../kernel.bin"
+ELF_OUT="../../Image/kernel.elf"
+BIN_OUT="../../Image/kernel.bin"
 
 asm_files=$(find . -type f -name '*.asm')
 c_files=$(find . -type f -name '*.c')

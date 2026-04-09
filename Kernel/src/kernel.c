@@ -14,19 +14,14 @@ void func2();
 
 int _main ()
 {
-
       ncClear();
 
       ncPrint("HEEEEEEELP", 1);
 
       // start the two processes and then switch them in the while loop
 
-      initProcess(&func1);
-      initProcess(&func2);
-
       while (1)
       {
-
             uint64 start_time = timer_get();
 
             // ncPrintBase(start_time, 10, 1);
