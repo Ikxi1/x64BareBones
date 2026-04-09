@@ -2,7 +2,7 @@
 #include <naiveMemory.h>
 
 
-static uint64 nextPID = 0;
+static uint64 nextPID = 1;
 
 
 void initProcess(void *function_ptr, Process *process_list)

@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-// #define MAX_PROCESSES 16
+#define MAX_PROCESSES 16
 
 #define STACK_SIZE 16384
 
@@ -15,7 +15,7 @@ typedef struct process {
       // uint64 parentPID; // if the process is started by another process, which one to return to
 } Process;
 
-// extern Process process_list[MAX_PROCESSES];
+extern Process *process_list;
 
 // typedef struct circ_buf_proc{
 //       uint32 buffer[MAX_PROCESSES];

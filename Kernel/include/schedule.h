@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <process.h>
 
-uint64 currPID;
+uint8 currPID = 0;
 
 /* schedule
 
@@ -12,6 +12,6 @@ uint64 currPID;
  Saves current stack pointer. // not right now
  Returns stack pointer for next process.
 */
-uint64 schedule(uint8 *rsp, Process *process_list);
+uint8 *schedule(uint8 *rsp, Process *process_list);
 
 #endif // SCHEDULE_H

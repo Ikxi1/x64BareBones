@@ -6,6 +6,7 @@ extern keyb_irq
 extern pit_irq
 extern timer_init
 extern schedule
+extern process_list
 
 ; Set up interrupt handlers
 init_int:

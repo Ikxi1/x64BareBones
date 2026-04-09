@@ -3,10 +3,10 @@
 
 #include <stdint.h>
 
-void ncPrint(const char *string, uint8 newline);
+void nc_print(const char *string, uint8 newline);
 // do not use outside of nc, overflows
 // void ncPrintChar(char character);
-void ncNewline();
+void nc_newline();
 void ncPrintBase(uint64 value, uint32 base, uint8 newline);
 void ncClear();
 void ncRainbow();

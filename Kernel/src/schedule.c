@@ -1,19 +1,20 @@
 #include <schedule.h>
 #include <naiveConsole.h>
+#include <process.h>
 
 
-
-uint64 schedule(uint8 *rsp, Process *process_list)
+uint8 *schedule(uint8 *rsp, Process *process_list)
 {
-      static bool b = false;
-      if (b == false)
+      uint8 *newRsp;
+
+      process_list[currPID].rsp = rsp;
+
+      currPID++;
+
+      while (process_list[currPID].stack == 0)
       {
-            b = true;
-            return (uint64)process_list[0].rsp;
+            currPID++;
       }
-      else
-      {
-            b = false;
-            return (uint64)process_list[1].rsp;
-      }
+
+      return process_list[currPID].rsp;
 }

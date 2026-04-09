@@ -15,7 +15,7 @@ void ncPrintChar(char character) {
       *videoCurrent++ = 0x02; // colour, black background 0, green text 2
 }
 
-void ncPrint(const char * string, uint8 newline) {
+void nc_print(const char * string, uint8 newline) {
       switch (*string) {
             case 0x08: { // BACKSPACE
                   videoCurrent--;
@@ -24,7 +24,7 @@ void ncPrint(const char * string, uint8 newline) {
             }
 
             case 0x0A: { // ENTER
-                  ncNewline();
+                  nc_newline();
                   break;
             }
 
@@ -39,7 +39,7 @@ void ncPrint(const char * string, uint8 newline) {
                         ncPrintChar(string[i]);
                   }
 
-                  if (newline == 1) ncNewline();
+                  if (newline == 1) nc_newline();
                   if (videoCurrent >= videoMax) {
                         videoCurrent = videoBase;
                   }
@@ -48,7 +48,7 @@ void ncPrint(const char * string, uint8 newline) {
       }
 }
 
-void ncNewline() {
+void nc_newline() {
       do {ncPrintChar(' ');}
       while((uint64)(videoCurrent - videoBase) % (videoWidth * 2) != 0);
 }
@@ -67,7 +67,7 @@ void ncPrintBin(uint64 value, uint8 newline) {
 
 void ncPrintBase(uint64 value, uint32 base, uint8 newline) {
       uintToBase(value, buffer, base);
-      ncPrint(buffer, newline);
+      nc_print(buffer, newline);
 }
 
 void ncClear() {
