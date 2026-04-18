@@ -1,6 +1,5 @@
-x64BareBones is a basic setup to develop operating systems for the Intel 64 bits architecture.
-
-The final goal of the project is to provide an entry point for a kernel and the possibility to load extra binary modules separated from the main kernel.
+This is basic OS that currently can't do much.
+It's based on a prior repo and uses the Pure64 bootloader (modified).
 
 Environment setup:
 1- Install the following packages before building the Toolchain and Kernel:
