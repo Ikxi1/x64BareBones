@@ -30,9 +30,4 @@ Author: Ikxi
 
 Original Author: Rodrigo Rearden (RowDaBoat)
 
-Collaborator: Augusto Nizzo McIntosh
-
-Font:         https://github.com/qwerasd205/AnnotationMono \
-Font license: https://github.com/qwerasd205/AnnotationMono/blob/main/LICENSE
-
-
+Original Collaborator: Augusto Nizzo McIntosh
