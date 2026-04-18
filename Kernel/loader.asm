@@ -8,7 +8,7 @@ extern init_LUT
 extern nv_init
 extern heap_init
 extern initProcess
-extern terminal
+extern naive_terminal
 
 ; define process struct and list
 %define MAX_PROCESSES 16
@@ -41,7 +41,7 @@ _loader:
       mov qword [rax + PROCESS_STACK], stack
       mov qword [rax + PROCESS_RSP], 0
 
-      lea rdi, [terminal]
+      lea rdi, [naive_terminal]
       lea rsi, [process_list]
       call initProcess
 

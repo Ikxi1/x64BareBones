@@ -45,7 +45,9 @@ void build_key_event();
 
 typedef struct key_event{
     uint16 flags;
-    uint32 key;
+    char key;
+    // this is initialized to 0 -> "key" is \0-terminated "string"
+    uint8 padding;
 } KEY_EVENT;
 
 #define CIRC_BUF_LEN 0xF

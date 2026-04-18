@@ -1,21 +1,13 @@
-WHat's hapopening:
-The kernel process is basically deleted
+1. Some shell commands:
+- echo
+      - string parsing
+            - string functions, already got strlen, but strcmp and others are needed
+      - better keyboard handling
+            - backspace not going wild
+            - don't "overflow" to top when newline at screenbottom
+                  - or just change the background on the active line, to make it easier to see?
+            - Capital characters
 
-New processes are in the list
-But when they are scheduled again
-The RSP isn't correct anymore, only correct right after
-initProcess()
-because I don't save RSP before switching
-
-Also the keyboard interrupt is only working half
-because 1 press and release does 2 process switches
-
-SOlution:
-Make kernel process, but it in the list
-And then save RSPs always before switching processses
-
-
-Sunday:
-Ok, currently trying to save the kernel process
-RSP is being kinda iffy, though I should be able to just save it on first schedule.
-Now I just wanna figure out how to make it only trigger once on a keypress and not trigger on release kon
+- ls, cd not yet
+      - will need filesystem for that
+            - BMFS is already in the repo, but not used yet, figure out RAM-FS

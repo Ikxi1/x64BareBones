@@ -5,8 +5,6 @@
 
 uint8 *schedule(uint8 *rsp, Process *process_list)
 {
-      uint8 *newRsp;
-
       process_list[currPID].rsp = rsp;
 
       currPID++;

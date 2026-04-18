@@ -1,7 +1,7 @@
 global cpuVendor
 
 global strlen
-global strcmp
+global strncmp
 
 global inportb
 global outportb
@@ -45,9 +45,17 @@ strlen:
 ret
 
 
-strcmp:
+strncmp:
+      ; arg 1 = rdi char *string1
+      ; arg 2 = rsi char *string2
+      ; arg 3 = rdx uint32 n
+      ; return = rax difference of s2 to s1
       enter 0, 0
+      push rcx
 
+      xor rcx, rcx
+
+      pop rcx
       leave
 ret
 

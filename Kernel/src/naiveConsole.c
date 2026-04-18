@@ -1,81 +1,97 @@
 #include <naiveConsole.h>
-// #include <lib.h>
+
 
 static uint32 uintToBase(uint64 value, char * buffer, uint32 base);
 
 static char buffer[64] = { '0' };
 static uint8 *const videoBase = (uint8 *)0xB8000;
 static uint8 *const videoMax =  (uint8 *)0xB8FA0;
-static uint8 *videoCurrent =    (uint8 *)0xB8000;
+// static uint8 *videoCurrent =    (uint8 *)0xB8000;
 static const uint32 videoWidth = 80;
 static const uint32 videoHeight = 25;
+uint8 cursor_x = 0;
+uint8 cursor_y = 0;
 
-void ncPrintChar(char character) {
+
+void nc_print_char(char character)
+{
+      uint8 *videoCurrent = videoBase + (cursor_x + videoWidth*cursor_y) * 2; // *2 because 16bit/character
       *videoCurrent++ = character;
-      *videoCurrent++ = 0x02; // colour, black background 0, green text 2
-}
-
-void nc_print(const char * string, uint8 newline) {
-      switch (*string) {
-            case 0x08: { // BACKSPACE
-                  videoCurrent--;
-                  *videoCurrent-- = 0;
-                  break;
-            }
-
-            case 0x0A: { // ENTER
-                  nc_newline();
-                  break;
-            }
-
-            case 0x20: { // SPACE
-                  *videoCurrent++ = 0;
-                  *videoCurrent++ = 0x02;
-                  break;
-            }
-
-            default: {
-                  for (int i = 0; string[i] != 0; i++) {
-                        ncPrintChar(string[i]);
-                  }
-
-                  if (newline == 1) nc_newline();
-                  if (videoCurrent >= videoMax) {
-                        videoCurrent = videoBase;
-                  }
-                  break;
+      *videoCurrent = 0x02; // colour, black background 0, green text 2
+      cursor_x++;
+      if (cursor_x >= 81)
+      {
+            cursor_x = 0;
+            cursor_y++;
+            if (cursor_y >= 25)
+            {
+                  cursor_y = 0;
             }
       }
 }
 
-void nc_newline() {
-      do {ncPrintChar(' ');}
-      while((uint64)(videoCurrent - videoBase) % (videoWidth * 2) != 0);
+
+void nc_delete_char()
+{
+      if (cursor_x > 0)
+      {
+            cursor_x--;
+            uint8 *videoCurrent = videoBase + (cursor_x + videoWidth*cursor_y) * 2;
+            *videoCurrent++ = 0;
+            *videoCurrent = 0x02;
+
+      }
 }
+
+
+void nc_print(const char * string, uint8 newline)
+{
+      for (int i = 0; string[i] != 0; i++) {
+            nc_print_char(string[i]);
+      }
+
+      if (newline == 1) nc_newline();
+}
+
+
+void nc_newline()
+{
+      for (int i = cursor_x; i < 80; i++)
+      {
+            nc_print_char(' ');
+      }
+}
+
 
 void ncPrintDec(uint64 value, uint8 newline) {
       ncPrintBase(value, 10, newline);
 }
 
+
 void ncPrintHex(uint64 value, uint8 newline) {
       ncPrintBase(value, 16, newline);
 }
 
+
 void ncPrintBin(uint64 value, uint8 newline) {
       ncPrintBase(value, 2, newline);
 }
+
 
 void ncPrintBase(uint64 value, uint32 base, uint8 newline) {
       uintToBase(value, buffer, base);
       nc_print(buffer, newline);
 }
 
+
 void ncClear() {
       for (int i = 0; i < videoHeight * videoWidth; i++) {
             videoBase[i * 2] = ' ';
       }
-      videoCurrent = videoBase;
+      cursor_x = 0;
+      cursor_y = 0;
 }
+
 
 static uint32 uintToBase(uint64 value, char * buffer, uint32 base) {
       char *p = buffer;
@@ -109,6 +125,7 @@ static uint32 uintToBase(uint64 value, char * buffer, uint32 base) {
       return digits;
 }
 
+
 void ncRainbow() {
       // ncClear();
       static unsigned short j = 0;
@@ -122,4 +139,10 @@ void ncRainbow() {
             i++;
       }
       j++;
+}
+
+
+void nc_render_cursor()
+{
+      return;
 }

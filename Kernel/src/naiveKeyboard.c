@@ -14,13 +14,14 @@ CIRC_BUF kb_isr_buf = {
 
 KEY_EVENT key_event = {
       .flags = 0,
-      .key = 0
+      .key = 0,
+      .padding = 0
 };
 
-uint32 key_lut[0xFF] = {0};
-uint32 shift_key_lut[0xFF] = {0};
-uint32 alt_gr_key_lut[0xFF] = {0};
-uint32 released_key_lut[0xFF] = {0};
+uint8 key_lut[0xFF] = {0};
+uint8 shift_key_lut[0xFF] = {0};
+uint8 alt_gr_key_lut[0xFF] = {0};
+uint8 released_key_lut[0xFF] = {0};
 
 
 void init_LUT() {
@@ -42,10 +43,10 @@ void init_LUT() {
 
       //           NUMPAD                    /                    *
       key_lut[69]  = 0x00; key_lut[53]  = 0x2F; key_lut[55]  = 0x2A;
-      //                7                    8                    9
-      key_lut[71]  = 0x37; key_lut[72]  = 0x38; key_lut[73]  = 0x39;
-      //                4                    5                    6
-      key_lut[75]  = 0x34, key_lut[76]  = 0x35; key_lut[77]  = 0x36;
+      //                7                    8                    9                    -
+      key_lut[71]  = 0x37; key_lut[72]  = 0x38; key_lut[73]  = 0x39; key_lut[74]  = 0x2D;
+      //                4                    5                    6                    +
+      key_lut[75]  = 0x34, key_lut[76]  = 0x35; key_lut[77]  = 0x36; key_lut[78]  = 0x2B;
       //                1                    2                    3
       key_lut[79]  = 0x31; key_lut[80]  = 0x32; key_lut[81]  = 0x33;
       //                0                                         ,
@@ -138,7 +139,7 @@ void build_key_event()
       if (next >= kb_isr_buf.length) next = 0;
 
       // put data into KEY_EVENT
-      uint32 c = kb_isr_buf.buffer[kb_isr_buf.tail];
+      uint8 c = kb_isr_buf.buffer[kb_isr_buf.tail];
 
       if (key_lut[c] != 0) {
             key_event.key = key_lut[c];
@@ -158,7 +159,7 @@ void build_key_event_old() {
       if (next >= kb_isr_buf.length) next = 0; // point tail to beginning
 
       // put data into KEY_EVENT
-      uint32 c = kb_isr_buf.buffer[kb_isr_buf.tail];
+      uint8 c = kb_isr_buf.buffer[kb_isr_buf.tail];
       // first check, if D/EXTENDED flag is set
       if (key_event.flags & KEY_DEXTENDED) {
 
