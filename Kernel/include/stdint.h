@@ -29,5 +29,6 @@ typedef uint8                   bool;
 #define false                   0
 
 #define null                    0
+#define nullptr                 ((void *)0)
 
 #endif /* STDINT_H_ */

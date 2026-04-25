@@ -12,7 +12,7 @@ extern naive_terminal
 
 ; define process struct and list
 %define MAX_PROCESSES 16
-%define PROCESS_SIZE 24    ; struct size in bytes
+%define PROCESS_SIZE 32    ; struct size in bytes
 ; struct as offsets
 %define PROCESS_PID    0
 %define PROCESS_STACK  8

@@ -17,11 +17,18 @@ void nt_print(char character)
             case 0x0A: // ENTER
             {
                   // check here for commands
-                  
+
+                  da_char *a = da_char_init(10);
+                  a->ptr = "hello\0";
+                  da_char *b = da_char_init(10);
+                  b->ptr = "hello\0";
+                  ncPrintBase(strncmp(a, b, 5), 10, 1);
 
                   // after command ran, new line
                   nc_newline();
-                  nc_print("$>", 0);
+                  // nc_print("$>", 0);
+                  nc_print(a->ptr, 1);
+                  nc_print(b->ptr, 1);
                   break;
             }
 
@@ -57,4 +64,9 @@ void naive_terminal()
 
             key_event.key = 0;
       }
+}
+
+
+void echo(da_char *string)
+{
 }

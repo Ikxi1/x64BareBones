@@ -26,6 +26,8 @@ void *malloc(uint64 size)
       // when not 64 bit aligned, add until it is
       // for example when only 8 bit aligned
       uintptr cur = (uintptr)align_64(heap_ptr);
+      *(uint64 *)cur = size;
+      cur += 8;
       uintptr next = cur + size;
       heap_ptr = (uintptr *)next;
       return (void *)cur;

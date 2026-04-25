@@ -8,6 +8,23 @@
                   - or just change the background on the active line, to make it easier to see?
             - Capital characters
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 - ls, cd not yet
       - will need filesystem for that
             - BMFS is already in the repo, but not used yet, figure out RAM-FS
