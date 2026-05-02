@@ -1,12 +1,14 @@
 global _loader
 global VesaModeInfoBlockBuffer
 global process_list
+global screen_text
 
 extern _main
 extern init_int
 extern init_LUT
 extern nv_init
 extern heap_init
+extern init_console
 extern initProcess
 extern naive_terminal
 
@@ -35,6 +37,7 @@ _loader:
       call heap_init
       call init_int
       call init_LUT   ; populate the keyboard scancode LUT
+      ;call init_console
 
       lea rax, [process_list]
       mov qword [rax + PROCESS_PID], 0
@@ -62,7 +65,13 @@ section .bss
 
 align 8
 process_list:
-    resb PROCESS_SIZE * MAX_PROCESSES
+      resb PROCESS_SIZE * MAX_PROCESSES
+
+align 8
+screen_text:
+      resd 1       ; capacity
+      resd 1       ; count
+      resb 25 * 80 ; this is the char space
 
 align 32 ; align so high for SIMD
 stack:

@@ -20,14 +20,16 @@ void heap_init()
 }
 
 
-void *malloc(uint64 size)
+void *malloc(uint32 size)
 {
       if (!heap_ptr) return null; /* not initialized */
       // when not 64 bit aligned, add until it is
       // for example when only 8 bit aligned
       uintptr cur = (uintptr)align_64(heap_ptr);
-      *(uint64 *)cur = size;
-      cur += 8;
+      *(uint32 *)cur = 0xDEADCA4E;
+      cur += 4;
+      *(uint32 *)cur = size;
+      cur += 4;
       uintptr next = cur + size;
       heap_ptr = (uintptr *)next;
       return (void *)cur;

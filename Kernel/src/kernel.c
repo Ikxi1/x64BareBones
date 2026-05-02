@@ -4,6 +4,7 @@
 #include <naiveVideo.h>
 #include <naiveMemory.h>
 #include <process.h>
+#include <string.h>
 
 
 extern uint8 endOfKernel;
@@ -14,11 +15,11 @@ void func2();
 
 int _main ()
 {
-      ncClear();
+      // key_event.key = 0;
+
+      nc_clear();
 
       nc_print("HEEEEEEELP", 1);
-
-      // start the two processes and then switch them in the while loop
 
       while (1)
       {
@@ -32,6 +33,10 @@ int _main ()
                   const char *c = (const char*)&key_event.key;
                   nc_print((const char*)&key_event.key, 0);
                   // nc_printBase(key_event.key, 10, 1);
+                  // if (key_event.key == 0x1B)
+                  // {
+                  //       _main();
+                  // }
                   key_event.key = 0;
             }
 

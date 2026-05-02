@@ -17,18 +17,18 @@ void nt_print(char character)
             case 0x0A: // ENTER
             {
                   // check here for commands
-
-                  da_char *a = da_char_init(10);
-                  a->ptr = "hello\0";
-                  da_char *b = da_char_init(10);
-                  b->ptr = "hello\0";
-                  ncPrintBase(strncmp(a, b, 5), 10, 1);
-
+                  uint32 a = strncmp((char *)(get_text_ptr() - 4), "echo", 4);
+                  if (a == 0)
+                  {
+                        nc_print("strings match", 0);
+                  }
+                  else
+                  {
+                        nc_print("strings don't match", 0);
+                  }
                   // after command ran, new line
                   nc_newline();
-                  // nc_print("$>", 0);
-                  nc_print(a->ptr, 1);
-                  nc_print(b->ptr, 1);
+                  nc_print("$>", 0);
                   break;
             }
 
@@ -49,6 +49,9 @@ void nt_print(char character)
 
 void naive_terminal()
 {
+      key_event.key = 0;
+      nc_clear();
+
       bool running = true;
 
       nc_print("$>", 0);
@@ -60,6 +63,11 @@ void naive_terminal()
                   build_key_event();
             }
 
+            if (key_event.key == 0x1B)
+            {
+                  naive_terminal();
+            }
+
             nt_print(key_event.key);
 
             key_event.key = 0;
@@ -67,6 +75,6 @@ void naive_terminal()
 }
 
 
-void echo(da_char *string)
+void echo(String *string)
 {
 }

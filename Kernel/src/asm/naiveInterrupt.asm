@@ -71,7 +71,6 @@ pit_handler:
 
       call pit_irq
 
-      ; testing process switching
       mov rdi, rsp
       lea rsi, [process_list]
       call schedule

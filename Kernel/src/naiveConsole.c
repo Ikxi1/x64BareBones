@@ -18,8 +18,14 @@ void nc_print_char(char character)
       uint8 *videoCurrent = videoBase + (cursor_x + videoWidth*cursor_y) * 2; // *2 because 16bit/character
       *videoCurrent++ = character;
       *videoCurrent = 0x02; // colour, black background 0, green text 2
+      screen_text->ptr[cursor_x + videoWidth*cursor_y] = character;
+      screen_text->count++;
+      if (screen_text->count < (videoWidth * videoHeight))
+      {
+            screen_text->count = 0;
+      }
       cursor_x++;
-      if (cursor_x >= 81)
+      if (cursor_x >= 80)
       {
             cursor_x = 0;
             cursor_y++;
@@ -84,7 +90,7 @@ void ncPrintBase(uint64 value, uint32 base, uint8 newline) {
 }
 
 
-void ncClear() {
+void nc_clear() {
       for (int i = 0; i < videoHeight * videoWidth; i++) {
             videoBase[i * 2] = ' ';
       }
@@ -126,23 +132,28 @@ static uint32 uintToBase(uint64 value, char * buffer, uint32 base) {
 }
 
 
-void ncRainbow() {
-      // ncClear();
-      static unsigned short j = 0;
-      // int k = 0;
-      unsigned background_colour = 0 << 12;
-      unsigned foreground_colour = 2 << 8;
-      unsigned colour = background_colour | foreground_colour;
-      for (unsigned short i = 0; i < videoMax;)
-      {
-            videoBase[i] = colour | j % 0b0000000011111111;
-            i++;
-      }
-      j++;
-}
+// void ncRainbow() {
+//       // ncClear();
+//       static unsigned short j = 0;
+//       // int k = 0;
+//       unsigned background_colour = 0 << 12;
+//       unsigned foreground_colour = 2 << 8;
+//       unsigned colour = background_colour | foreground_colour;
+//       for (unsigned short i = 0; i < videoMax;)
+//       {
+//             videoBase[i] = colour | j % 0b0000000011111111;
+//             i++;
+//       }
+//       j++;
+// }
 
 
 void nc_render_cursor()
 {
       return;
+}
+
+void *get_text_ptr()
+{
+      return (void *)(screen_text->ptr + screen_text->count);
 }
