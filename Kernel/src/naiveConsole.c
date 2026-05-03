@@ -18,11 +18,11 @@ void nc_print_char(char character)
       uint8 *videoCurrent = videoBase + (cursor_x + videoWidth*cursor_y) * 2; // *2 because 16bit/character
       *videoCurrent++ = character;
       *videoCurrent = 0x02; // colour, black background 0, green text 2
-      screen_text->ptr[cursor_x + videoWidth*cursor_y] = character;
-      screen_text->count++;
-      if (screen_text->count < (videoWidth * videoHeight))
+      screen_text.ptr[cursor_x + videoWidth*cursor_y] = character;
+      screen_text.count++;
+      if (screen_text.count > (videoWidth * videoHeight))
       {
-            screen_text->count = 0;
+            screen_text.count = 0;
       }
       cursor_x++;
       if (cursor_x >= 80)
@@ -153,7 +153,16 @@ void nc_render_cursor()
       return;
 }
 
+
 void *get_text_ptr()
 {
-      return (void *)(screen_text->ptr + screen_text->count);
+      return (void *)(screen_text.ptr + screen_text.count);
+}
+
+
+void init_console()
+{
+      screen_text.capacity = videoWidth * videoHeight;
+      screen_text.count = 0;
+      memset_char(screen_text.ptr, '\0', screen_text.capacity);
 }

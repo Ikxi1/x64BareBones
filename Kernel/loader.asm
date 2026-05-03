@@ -37,21 +37,23 @@ _loader:
       call heap_init
       call init_int
       call init_LUT   ; populate the keyboard scancode LUT
-      ;call init_console
+      call init_console
 
       lea rax, [process_list]
       mov qword [rax + PROCESS_PID], 0
       mov qword [rax + PROCESS_STACK], stack
       mov qword [rax + PROCESS_RSP], 0
 
-      lea rdi, [naive_terminal]
-      lea rsi, [process_list]
-      call initProcess
+      ;lea rdi, [naive_terminal]
+      ;lea rsi, [process_list]
+      ;call initProcess
 
       sti
-      ; call _main      ; call kernel proper
+      call naive_terminal
+
 .L0:
       hlt             ; halt machine should kernel return
+                      ; and inbetween scheduling
       JMP .L0
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -61,17 +63,22 @@ VesaModeInfoBlockBuffer: dq 1  ; hold the pointer to the block
 
 eokl    dq  STACKSIZE + stack
 
+section .data
+
+align 8
+screen_text:
+      dd 25 * 80
+      dd 0
+      dq screen_text_buffer
+
 section .bss
 
 align 8
 process_list:
       resb PROCESS_SIZE * MAX_PROCESSES
 
-align 8
-screen_text:
-      resd 1       ; capacity
-      resd 1       ; count
-      resb 25 * 80 ; this is the char space
+screen_text_buffer:
+      resb 25 * 80
 
 align 32 ; align so high for SIMD
 stack:

@@ -30,5 +30,7 @@ void *malloc(uint32 size);
 
 void memcpy(void *ptr, const void *data, uint64 size);
 
+void memset_char(char *ptr, const char data, uint64 size);
+
 
 #endif // NAIVEMEMORY_H

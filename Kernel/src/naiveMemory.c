@@ -57,3 +57,15 @@ void memcpy(void *ptr, const void *data, uint64 size)
             c++;
       }
 }
+
+
+void memset_char(char *ptr, const char data, uint64 size)
+{
+      uint64 a = 0;
+
+      while (size > 0)
+      {
+            ptr[a++] = data;
+            size--;
+      }
+}

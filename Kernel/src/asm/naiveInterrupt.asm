@@ -71,10 +71,10 @@ pit_handler:
 
       call pit_irq
 
-      mov rdi, rsp
-      lea rsi, [process_list]
-      call schedule
-      mov rsp, rax
+      ;mov rdi, rsp
+      ;lea rsi, [process_list]
+      ;call schedule
+      ;mov rsp, rax
 
 pit_done:
       mov al, 0x20           ; Acknowledge the IRQ

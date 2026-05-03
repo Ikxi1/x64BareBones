@@ -7,6 +7,7 @@ String *new_string(uint32 size)
       d->capacity = size;
       d->count = 0;
       d->ptr = (char *)malloc(size);
+      memset_char(d->ptr, '\0', d->capacity);
 
       return d;
 }

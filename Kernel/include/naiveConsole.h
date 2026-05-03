@@ -25,6 +25,6 @@ void init_console();
 
 extern uint8 cursor_x;
 extern uint8 cursor_y;
-extern String *screen_text;
+extern String screen_text;
 
 #endif

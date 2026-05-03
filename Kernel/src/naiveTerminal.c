@@ -17,7 +17,7 @@ void nt_print(char character)
             case 0x0A: // ENTER
             {
                   // check here for commands
-                  uint32 a = strncmp((char *)(get_text_ptr() - 4), "echo", 4);
+                  uint32 a = strncmp((char *)get_text_ptr() - 4, "echo", 4);
                   if (a == 0)
                   {
                         nc_print("strings match", 0);
